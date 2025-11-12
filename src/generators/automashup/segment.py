@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 import pyrubberband as pyrb
-from utils import closest_index
+from automashup_utils import closest_index
 
 # Define a Track class to represent a part of a track
 # The aim of this kind of object is to keep together the audio itself,

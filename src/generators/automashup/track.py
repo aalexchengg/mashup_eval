@@ -1,11 +1,11 @@
-# From: https://github.com/ax-le/automashup/blob/main/automashup/src/track.py
+# Author @abcheng. Adopted from: https://github.com/ax-le/automashup/blob/main/automashup/src/track.py
 import json
 import librosa
 import numpy as np
 import pyrubberband as pyrb
 
-from utils import note_to_frequency, calculate_pitch_shift,  ncrease_array_size
-from segment import *
+from automashup_utils import note_to_frequency, calculate_pitch_shift,  increase_array_size
+from mashup_eval.src.generators.segment import *
 
 
 # Define a Track class to represent a musical track
@@ -47,7 +47,7 @@ class Track:
         # type should be one of the following :
         # 'entire', 'bass', 'drums', 'vocals', 'other'
         name = track_name + ' - ' + type
-        audio, sr = librosa.load(get_path(track_name, type, stored_data_path=stored_data_path), sr=None)
+        audio, sr = librosa.load(track_name, sr=None)
         struct_path = f"{stored_data_path}/struct/{track_name}.json"
         with open(struct_path, 'r') as file:
             metadata = json.load(file)
