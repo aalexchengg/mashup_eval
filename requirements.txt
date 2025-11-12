@@ -8,3 +8,5 @@ torchaudio==2.9.0
 transformers==4.57.1
 pyrubberband==0.4.0
 pyloudnorm==0.1.1
+pyrb==0.10.9
+pydub==0.25.1
