@@ -1,5 +1,5 @@
 # Dataset stuff
-*fma_small/
+*data/
 *fma_small.zip
 # Byte-compiled / optimized / DLL files
 __pycache__/

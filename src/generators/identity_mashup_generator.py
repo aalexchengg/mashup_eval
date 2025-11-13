@@ -42,7 +42,7 @@ if __name__ == "__main__":
     generator = IdentityMashupGenerator("test_mashup", "tmp")
     logger.info("Loading and sampling files...")
     # randomly sample two audio paths and create the generation
-    paths = get_fma_paths("/Users/abcheng/Documents/workspace/mashup_eval") # Replace with your own path
+    paths = get_fma_paths("/Users/abcheng/Documents/workspace/mashup_eval/data") # Replace with your own path
     samples = random.sample(paths, 2)
     logger.info("Generating and checking equality...")
     generator.generate(samples, "x1_copy")

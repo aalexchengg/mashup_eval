@@ -1,4 +1,4 @@
-from automashup_utils import increase_array_size
+from automashup.automashup_utils import increase_array_size
 import librosa
 import numpy as np
 import pyrubberband as pyrb

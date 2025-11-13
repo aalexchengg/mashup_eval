@@ -3,7 +3,7 @@ import numpy as np
 import math
 import os
 import json
-from key_finder import KeyFinder
+from automashup.key_finder import KeyFinder
 
 # From: https://github.com/ax-le/automashup/blob/main/automashup/src/utils.py
 def note_to_frequency(key):
@@ -54,3 +54,30 @@ def key_finder(path, stored_data_path="."):
         data['key'] = KeyFinder(path).key_dict
     with open(struct_path, 'w') as file:
         json.dump(data, file, indent=2)
+
+
+def get_path(track_name, type, stored_data_path = "."):
+    # returns the path of a song
+    # It can return the whole track or just a separated part of it,
+    # depending on the type, which should be one of the following :
+    # 'entire', 'bass', 'drums', 'vocals', 'other'
+    # Extract the filename without extension
+    track_name_no_ext = os.path.splitext(track_name)[0]
+
+    if type == 'entire':
+        if os.path.exists(f'{stored_data_path}/input/{track_name}'):
+            path = f'{stored_data_path}/input/{track_name}'
+        else:
+            path = f'{stored_data_path}/input/{track_name_no_ext}.wav' # Check for .wav if .mp3 is not found
+            if not os.path.exists(path):
+                path = f'{stored_data_path}/input/{track_name_no_ext}.mp3' # Check for .mp3 if .wav is not found
+    else:
+        path = f'{stored_data_path}/separated/htdemucs/{track_name_no_ext}/{type}.wav'
+        if not os.path.exists(path):
+            path = f'{stored_data_path}/separated/htdemucs/{track_name_no_ext}/{type}.mp3'
+            if not os.path.exists(path): # Check for common extension mismatches
+                path = f'{stored_data_path}/separated/htdemucs/{track_name_no_ext}/{type}.wav'
+                if not os.path.exists(path):
+                    path = f'{stored_data_path}/separated/htdemucs/{track_name_no_ext}/{type}.mp3'
+    assert(os.path.exists(path)), f"File not found: {path}" # Added a more informative error message
+    return path
