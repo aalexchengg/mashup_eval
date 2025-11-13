@@ -1,22 +1,26 @@
+# Author: @abcheng
 from base_mashup_generator import BaseMashupGenerator
+from dataclasses import dataclass
 import numpy as np
 from typing import Tuple
 import random
 import logging
 from typing import List
 
-import sys
-sys.path.append("..")
-from utils import get_fma_paths, decode_audio
-
 logger = logging.getLogger(__name__)
 
+@dataclass
 class IdentityMashupGenerator(BaseMashupGenerator):
     """
     Trivially returns the first mashup and ignores the second mashup.
     """
     
     def generate(self, paths: List[str], out = None) -> Tuple[np.ndarray, int]:
+        """
+        Returns the first audio from the given paths.
+        @param paths: audio paths to mash songs up together
+        @param out: output filename of
+        """
         if len(paths) == 0:
             logger.error("Attempted to generate a mashup, but no filepaths were provided. Returning empty values")
             return np.empty(0), 0
@@ -27,6 +31,10 @@ class IdentityMashupGenerator(BaseMashupGenerator):
 
 
 if __name__ == "__main__":
+    # import functions to load in audio
+    import sys
+    sys.path.append("..")
+    from utils import get_fma_paths, decode_audio
     logging.basicConfig()
     logger.setLevel(logging.DEBUG)
     logger.info("Testing loading and saving...")
@@ -34,7 +42,7 @@ if __name__ == "__main__":
     generator = IdentityMashupGenerator("test_mashup", "tmp")
     logger.info("Loading and sampling files...")
     # randomly sample two audio paths and create the generation
-    paths = get_fma_paths("/Users/abcheng/Documents/workspace/mashup_eval") # Replace with your own path
+    paths = get_fma_paths("/Users/abcheng/Documents/workspace/mashup_eval/data") # Replace with your own path
     samples = random.sample(paths, 2)
     logger.info("Generating and checking equality...")
     generator.generate(samples, "x1_copy")

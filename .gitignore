@@ -1,7 +1,6 @@
 # Dataset stuff
-data/fma_small/
-data/fma_small.zip
-data/holdout_set/
+*data/
+*fma_small.zip
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
