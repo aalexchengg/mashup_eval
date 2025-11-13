@@ -1,6 +1,6 @@
 # Author: @echu2
 # Assumes FMA data is already downloaded in root folder
-# Run in root folder with python -m src.evaluate.generate_holdout -f data/fma_small
+# Run in root folder with python -m src.evaluate.prepare_holdout -f data/fma_small
 
 import argparse
 import json
