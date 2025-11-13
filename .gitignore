@@ -1,18 +1,18 @@
 # Dataset stuff
 data/fma_small/
 data/fma_small.zip
+data/holdout_set/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
 
-# Eval
-data/holdout_set/
-
 # C extensions
 *.so
 
 # Distribution / packaging
+.idea/
+
 .Python
 build/
 develop-eggs/
