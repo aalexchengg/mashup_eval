@@ -16,9 +16,20 @@ If that doesn't work, try using 7zip to unzip the file
 7z x fma_small.zip
 ```
 
-In addition, download a subset of 21 songs that we use specifically for song mashups. You can do so by doing
+Then create a data directory and move it over
+
 ```
-wget https://drive.google.com/file/d/1V_LDfm_GT2_XCN5EeXrzA7xBifxkxDAu/view?usp=sharing
+mkdir data 
+mv fma_small data/
+```
+
+In addition, download a subset of 21 songs that we use specifically for song mashups. You can do so by downloading `fma_subset.zip` from [this Google Drive folder](https://drive.google.com/drive/folders/13ZmQ_NHpNQptrDNra0OR1GNkIQyzU9MK?usp=drive_link).
+
+Rename it to `sample`, and also move it to your data directory
+
+```
+mv fma_subset sample
+mv sample data/
 ```
 
 ## Create the conda environment
@@ -56,10 +67,8 @@ python3 preprocess.py
 ```
 To preprocess all the songs.
 
-Alternatively, if none of this works out for you, you can also take it from my Google Drive with the following commands
+Alternatively, if none of this works out for you, you can also take it from my (Google Drive Folder)[https://drive.google.com/drive/folders/13ZmQ_NHpNQptrDNra0OR1GNkIQyzU9MK?usp=drive_link], and then unzipping them like so.
 ```
-wget https://drive.google.com/file/d/1eGWDzdWef4wMLTrRL05qwAFlMPGzbAX3/view?usp=sharing
-wget https://drive.google.com/file/d/1mzQb_zzlKLIgJrQsCBtkD-3rtod7_pzb/view?usp=sharing
 unzip out-20251113T044448Z-1-001.zip
 unzip out-20251113T044448Z-1-002.zip
 ```
@@ -69,5 +78,21 @@ mv out\ 2/separated/htdemucs/Dragon\ Or\ Emperor\ -\ Part\ of\ Me\ Says out/sepa
 mv out\ 2/separated/htdemucs/Los\ Steaks\ -\ Sunday\ Girls out/separated/htedemucs
 mv out\ 2/separated/htdemucs/The\ Cute\ Lepers\ -\ Young\ Hearts out/separated/htedemucs
 ```
+Rename this directory to `auto_preprocess` and drag it into your data folder.
+
+```
+mv auto_preprocess data/
+```
+
+At the end, you should have a data directory that looks like this:
+
+```
+mashup_eval/
+├─ data/
+│  ├─ auto_preprocess/
+│  ├─ sample/
+│  ├─ fma_small/
+```
+
 
 # Running Experiments
