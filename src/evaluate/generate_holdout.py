@@ -1,5 +1,6 @@
 # Author: @echu2
 # Assumes FMA data is already downloaded in root folder
+# Run in root folder with python -m src.evaluate.generate_holdout -f data/fma_small
 
 import argparse
 import json
@@ -25,7 +26,7 @@ def setup_parser():
     parser.add_argument(
         "-s", "--save_path", 
         type=str, 
-        default=os.path.join("eval", "holdout_set"),
+        default=os.path.join("data", "holdout_set"),
         help="folder to save holdout set + json with list of all names"
     )
     return parser

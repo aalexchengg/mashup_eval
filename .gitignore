@@ -1,13 +1,13 @@
 # Dataset stuff
-*fma_small/
-*fma_small.zip
+data/fma_small/
+data/fma_small.zip
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
 
 # Eval
-eval/holdout_set/
+data/holdout_set/
 
 # C extensions
 *.so
