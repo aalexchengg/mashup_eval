@@ -7,7 +7,7 @@ __pycache__/
 *$py.class
 
 # Eval
-eval/holdout_set/
+data/holdout_set/
 
 # C extensions
 *.so
