@@ -1,4 +1,4 @@
-# Author: @abcheng
+# Author: @abcheng. A base class for mashup generators.
 from abc import ABC, abstractmethod
 from typing import Tuple, List
 import numpy as np
@@ -9,7 +9,7 @@ import soundfile as sf
 
 logger = logging.getLogger(__name__)
 
-class BaseMashupGenerator:
+class BaseMashupGenerator(ABC):
     """
     Abstract class for a MashupGenerator. Should be inherited to be any use.
     """
@@ -81,10 +81,10 @@ class BaseMashupGenerator:
         """
         name = name.lower()
         if "identity" in name:
-            from mashup_eval.src.generators.identity_mashup_generator import IdentityMashupGenerator
+            from generators.identity_mashup_generator import IdentityMashupGenerator
             return IdentityMashupGenerator(name, out_dir)
         elif "auto" in name:
-            from mashup_eval.src.generators.auto_mashup_generator import AutoMashupGenerator
+            from generators.auto_mashup_generator import AutoMashupGenerator
             return AutoMashupGenerator(name, out_dir)
         else:
             raise ValueError(f"Unsupported generator key: {name}")

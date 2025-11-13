@@ -1,5 +1,5 @@
 # Author: @abcheng
-from base_mashup_generator import BaseMashupGenerator
+from generators.base_mashup_generator import BaseMashupGenerator
 from dataclasses import dataclass
 import numpy as np
 from typing import Tuple
