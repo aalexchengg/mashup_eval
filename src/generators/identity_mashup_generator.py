@@ -1,15 +1,17 @@
 # Author: @abcheng
 from generators.base_mashup_generator import BaseMashupGenerator
-from dataclasses import dataclass
 import numpy as np
 from typing import Tuple
 import random
 import logging
 from typing import List
+# import functions to load in audio
+import sys
+sys.path.append("..")
+from utils import get_fma_paths, decode_audio
 
 logger = logging.getLogger(__name__)
 
-@dataclass
 class IdentityMashupGenerator(BaseMashupGenerator):
     """
     Trivially returns the first mashup and ignores the second mashup.
@@ -31,10 +33,6 @@ class IdentityMashupGenerator(BaseMashupGenerator):
 
 
 if __name__ == "__main__":
-    # import functions to load in audio
-    import sys
-    sys.path.append("..")
-    from utils import get_fma_paths, decode_audio
     logging.basicConfig()
     logger.setLevel(logging.DEBUG)
     logger.info("Testing loading and saving...")

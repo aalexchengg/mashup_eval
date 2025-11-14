@@ -24,6 +24,7 @@ def setup_parser():
                         default = "ignore",
                         help = "Output directory of matcher, if specified.")
     parser.add_argument('-out_path', type = str,
+                        default = "match_out",
                         help = "Output path of jsonl. Is populated in out_dir if specified.")
     return parser
 

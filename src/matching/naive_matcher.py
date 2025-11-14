@@ -12,10 +12,10 @@ class NaiveMatcher(BaseMatcher):
 
     def generate_matches(self, sample_directory: str, max_size: int = -1, out_path: str = "match_out") -> List[Dict[int, Match]]:
         """
-        Naively pairs songs together and outputs it into a json list, as well as returns it.
-        @param sample_directory: directory where all the songs exists
-        @param max_size: maximum size of the resulting json list. -1 means unchanged.
-        @param out_path: output_path of the resulting jsonl file. if an out_dir was created, we write to that directory.
+        Naively pairs songs together and outputs it into a json list, as well as returns it.\\
+        @param sample_directory: directory where all the songs exists.\\
+        @param max_size: maximum size of the resulting json list. -1 means unchanged.\\
+        @param out_path: output_path of the resulting jsonl file. if an out_dir was created, we write to that directory.\\
         @returns a list of Match objects, which represents matches.
         """
         result = []
