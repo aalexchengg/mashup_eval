@@ -1,6 +1,5 @@
 # Author: @echu2
 # Assumes FMA data is already downloaded in root folder
-# Run in root folder with python -m src.evaluate.prepare_holdout -f data/fma_small
 
 import argparse
 import json
@@ -15,7 +14,8 @@ def setup_parser():
     parser.add_argument(
         "-f", "--fma_path", 
         type=str, 
-        help="path of FMA folder (likely fma_small)"
+        default=os.path.join("data", "fma_small"),
+        help="path of FMA folder (likely data/fma_small)", 
     )
     parser.add_argument(
         "-p", "--percent", 
@@ -27,7 +27,7 @@ def setup_parser():
         "-s", "--save_path", 
         type=str, 
         default=os.path.join("data", "holdout_set"),
-        help="folder to save holdout set + json with list of all names"
+        help="folder to save holdout set"
     )
     return parser
 
@@ -52,7 +52,6 @@ def main(args):
 
     # save them as new wav files in out folder
     os.makedirs(out_path, exist_ok=True)
-    os.makedirs(os.path.join(out_path, "wav_files"), exist_ok=True)
     final_file_names = []
 
     # save to out folder + json
@@ -65,8 +64,7 @@ def main(args):
                 file_as_np = file_as_np.reshape((-1, 2))
             new_file_name = os.path.splitext(os.path.split(file_name)[1])[0]
             new_file_name += ".wav"
-            new_file_name = os.path.join(os.path.join(out_path, "wav_files"), 
-                                        new_file_name)
+            new_file_name = os.path.join(out_path, new_file_name)
             
             pydub_file.export(new_file_name, format="wav")
             final_file_names.append(new_file_name)
@@ -74,13 +72,13 @@ def main(args):
             print(f"could not write file {file_name}, skipping")
             continue
 
-    out_json = os.path.join(out_path, "file_names.json")
-    with open(out_json, 'w', encoding='utf-8') as f: 
-        json.dump(final_file_names, f, indent=4)
+    # out_json = os.path.join(out_path, "file_names.json")
+    # with open(out_json, 'w', encoding='utf-8') as f: 
+    #     json.dump(final_file_names, f, indent=4)
 
 if __name__ == "__main__": 
     parser = setup_parser()
     args = parser.parse_args()
-    if not os.path.isdir(args.fma_path): 
+    if not args.fma_path or not os.path.isdir(args.fma_path): 
         raise Exception("please provide valid FMA path")
     main(args)
