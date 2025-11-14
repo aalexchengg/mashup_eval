@@ -2,6 +2,7 @@
 # General class to get embeddings of audio file from model
 # Currently this class assumes we are in a MERT-like model space, but can probably
 
+from functools import cache
 import librosa
 import torch
 from transformers import AutoModel, Wav2Vec2FeatureExtractor
@@ -36,6 +37,9 @@ class EmbeddingGenerator:
     def convert(self, input_audio):
         """
         general function to case on model type, currently only supports mert
+        note that this function itself is not cached as it takes in a 
+        numpy array (which cannot be hashed), but theoretically the wrapper
+        in HoldoutSet is cached (as it takes in string file names)
         """
         if "MERT" in self.model_name:
             # assuming that last layer is the embedding space we want to be in
@@ -48,7 +52,7 @@ if __name__ == "__main__":
     # test it works
     generator = EmbeddingGenerator()
     # load in sample audio
-    sample_file_path = "eval/holdout_set/wav_files/000200.wav"
+    sample_file_path = "data/holdout_set/wav_files/000200.wav"
 
     print(f"loading in sample waveform {sample_file_path}...")
     sample_waveform, _ = librosa.load(sample_file_path, sr=generator.processor_sr)
