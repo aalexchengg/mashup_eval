@@ -1,5 +1,5 @@
 # Author: @abcheng. Adopted from https://github.com/ax-le/automashup/blob/main/automashup/Notebooks/Tutorial%20notebook%20-%20make%20a%20mashup.ipynb.
-from base_mashup_generator import BaseMashupGenerator
+from generators.base_mashup_generator import BaseMashupGenerator
 import numpy as np
 from typing import Tuple
 import random
