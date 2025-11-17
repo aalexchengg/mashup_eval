@@ -1,6 +1,6 @@
 # Author: @abcheng. A base class for mashup generators.
 from abc import ABC, abstractmethod
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 import numpy as np
 import os
 from pathlib import Path
@@ -61,11 +61,12 @@ class BaseMashupGenerator(ABC):
 
 
     @abstractmethod
-    def generate(paths: List[str], out = None) -> Tuple[np.ndarray, int]:
+    def generate(paths: List[str], out:str = None, layers: Dict[str, str] = None) -> Tuple[np.ndarray, int]:
         """
         Generates a mashup.\\
         @param paths: list of filepaths of songs we will be mashing up. We assume they are all mp3 for now.\\
         @param out: the output directory of the mashup, if specified.\\
+        @param layers: if we want to specify which song belongs to which layer.\\
         @returns: the numpy array and the sampling rate of the resulting mashup.\\ 
         """
         pass

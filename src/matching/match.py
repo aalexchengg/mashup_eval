@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict, Optional
 import json
 from uuid import UUID
 
@@ -16,12 +16,17 @@ class Match:
     directory: str
     songs: List[str]
     score: float = 0.0
+    layers: Optional[Dict[str, str]] = None
 
     def to_json(self):
         """
         Returns the dataclass in a json format.
         """
-        as_dict = {"id": str(self.id), "directory": self.directory, "songs": self.songs, "score": self.score}
+        as_dict = {"id": str(self.id), 
+                   "directory": self.directory, 
+                   "songs": self.songs, 
+                   "score": self.score,
+                     "layers": self.layers}
         return json.dumps(as_dict)
     
     def __lt__(self, other):

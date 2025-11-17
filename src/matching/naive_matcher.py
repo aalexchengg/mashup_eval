@@ -10,7 +10,7 @@ class NaiveMatcher(BaseMatcher):
     A naive matcher that puts two songs together without checking for compatibility.
     """
 
-    def generate_matches(self, sample_directory: str, max_size: int = -1, out_path: str = "match_out") -> List[Dict[int, Match]]:
+    def generate_matches(self, sample_directory: str, max_size: int = -1, out_path: str = "match_out", sort = "unsorted") -> List[Match]:
         """
         Naively pairs songs together and outputs it into a json list, as well as returns it.\\
         @param sample_directory: directory where all the songs exists.\\

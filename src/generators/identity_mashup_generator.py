@@ -4,7 +4,7 @@ import numpy as np
 from typing import Tuple
 import random
 import logging
-from typing import List
+from typing import List, Dict
 # import functions to load in audio
 import sys
 sys.path.append("..")
@@ -17,11 +17,13 @@ class IdentityMashupGenerator(BaseMashupGenerator):
     Trivially returns the first mashup and ignores the second mashup.
     """
     
-    def generate(self, paths: List[str], out = None) -> Tuple[np.ndarray, int]:
+    def generate(self, paths: List[str], out:str = None, layers: Dict[str, str] = None) -> Tuple[np.ndarray, int]:
         """
-        Returns the first audio from the given paths.
-        @param paths: audio paths to mash songs up together
-        @param out: output filename of
+        Returns the first audio from the given paths.\\
+        @param paths: audio paths to mash songs up together.\\
+        @param out: output filename of the generated song.\\
+        @param layers: UNUSED in this function.\\
+        @return audio, sr: the audio and sampling rate of the resulting mashup.
         """
         if len(paths) == 0:
             logger.error("Attempted to generate a mashup, but no filepaths were provided. Returning empty values")

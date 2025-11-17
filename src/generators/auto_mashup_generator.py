@@ -4,7 +4,7 @@ import numpy as np
 from typing import Tuple
 import random
 import logging
-from typing import List
+from typing import List, Dict
 from collections import defaultdict
 
 from generators.automashup.track import Track
@@ -24,7 +24,7 @@ class AutoMashupGenerator(BaseMashupGenerator):
         self.layers = ['vocals', 'bass', 'drums', 'other']
     
     
-    def generate(self, paths: List[str], out = None) -> Tuple[np.ndarray, int]:
+    def generate(self, paths: List[str], out = None, layers: Dict[str, str] = None) -> Tuple[np.ndarray, int]:
         """
         Generates a song based on the audio paths.\\ 
         @param paths: audio paths to songs we want to mash up.\\
@@ -43,7 +43,7 @@ class AutoMashupGenerator(BaseMashupGenerator):
         # we're going to randomly choose from the paths we have and generate our mashups
         tracks = []
         for layer, candidates in songs.items():
-            candidate = random.choice(candidates) # TODO: there's a chance we generate the same song for all candidates. can we prevent that?
+            candidate = layers[layer] if layers != None and layers[layer] != None else random.choice(candidates)
             candidate_track = Track.track_from_song(candidate, type=layer, stored_data_path=self.preprocess_dir)
             tracks.append(candidate_track)
         # now, we want to apply the mashup function
