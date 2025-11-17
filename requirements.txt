@@ -5,6 +5,7 @@ numpy==2.3.4
 pandas==2.3.3
 torch==2.9.0
 torchaudio==2.9.0
+torchcodec==0.8.1
 transformers==4.57.1
 pyrb==0.10.9
 pydub==0.25.1
@@ -13,3 +14,8 @@ tqdm==4.67.1
 soundfile==0.13.1
 pyrubberband==0.4.0
 pyloudnorm==0.1.1
+pyrb==0.10.9
+pydub==0.25.1
+nnAudio==0.3.3
+tqdm==4.67.1
+soundfile==0.13.1

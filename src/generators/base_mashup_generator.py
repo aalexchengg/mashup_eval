@@ -1,6 +1,6 @@
 # Author: @abcheng. A base class for mashup generators.
 from abc import ABC, abstractmethod
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 import numpy as np
 import os
 from pathlib import Path
@@ -15,9 +15,9 @@ class BaseMashupGenerator(ABC):
     """
     def __init__(self, name: str, out_dir: str = None):
         """
-        Initializes a generator with a given name
-        @param name: the name of the mashup generator
-        @param generate_out_dir: whether to generate the output directory for this mashup generator
+        Initializes a generator with a given name.\\
+        @param name: the name of the mashup generator.\\
+        @param generate_out_dir: whether to generate the output directory for this mashup generator,
         """
         self.name = name
         self.out_dir = self.create_out_dir(out_dir)
@@ -31,14 +31,14 @@ class BaseMashupGenerator(ABC):
     
     def __str__(self):
         """
-        print(generator) should return generator.name
+        print(generator) should return generator.name.
         """
         return self.name 
     
     def create_out_dir(self, out_dir: str) -> str:
         """
-        Creates an output directory. If nothing is passed, creates a default output directory.
-        @param out_dir: name of output directory, if exists.
+        Creates an output directory. If nothing is passed, creates a default output directory.\\
+        @param out_dir: name of output directory, if exists.\\
         @returns resulting name of output directory.
         """
         if out_dir == None:
@@ -50,10 +50,10 @@ class BaseMashupGenerator(ABC):
         
     def save_generation(self, x: np.ndarray, sr: int, filename: str) -> None:
         """
-        Saves a generated audio to a filename.
-        @param x: np array representing the audio
-        @param sr: sampling rate of the audio
-        @param filename: filename to save it to
+        Saves a generated audio to a filename.\\
+        @param x: np array representing the audio.\\
+        @param sr: sampling rate of the audio.\\
+        @param filename: filename to save it to, without ext.\\
         """
         # Based on: https://stackoverflow.com/questions/73239578/couldnt-store-audio-as-mp3-file-using-soundfile
         # Since FMA is a mp3 dataset, so we need to transpose.
@@ -61,23 +61,24 @@ class BaseMashupGenerator(ABC):
 
 
     @abstractmethod
-    def generate(paths: List[str], out = None) -> Tuple[np.ndarray, int]:
+    def generate(paths: List[str], out:str = None, layers: Dict[str, str] = None) -> Tuple[np.ndarray, int]:
         """
-        Generates a mashup.
-        @param paths: list of filepaths of songs we will be mashing up. We assume they are all mp3 for now
-        @param out: the output directory of the mashup, if specified
-        @returns: the numpy array and the sampling rate of the resulting mashup 
+        Generates a mashup.\\
+        @param paths: list of filepaths of songs we will be mashing up. We assume they are all mp3 for now.\\
+        @param out: the output directory of the mashup, if specified.\\
+        @param layers: if we want to specify which song belongs to which layer.\\
+        @returns: the numpy array and the sampling rate of the resulting mashup.\\ 
         """
         pass
 
     @staticmethod
     def create(name: str, out_dir: str = None):
         """
-        Factory method to create subclasses of BaseMashupGenerators.
-        Accepted generators are "identity" and "auto".
-        @param name: name of the generator
-        @param out_dir: output directory, if specified
-        @returns a child BaseMashupGenerator
+        Factory method to create subclasses of BaseMashupGenerators.\\
+        Accepted generators are "identity" and "auto".\\
+        @param name: name of the generator.\\
+        @param out_dir: output directory, if specified.\\
+        @returns a child BaseMashupGenerator.\\
         """
         name = name.lower()
         if "identity" in name:
