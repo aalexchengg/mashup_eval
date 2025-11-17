@@ -1,13 +1,14 @@
 # Author @abcheng.
 from matching.base_matcher import BaseMatcher
 from matching.match import Match
-from typing import List, Dict, Optional
+from typing import List, Optional
 from matching.cocola.contrastive_model import constants
 from matching.cocola.contrastive_model.contrastive_model import CoCola
 from matching.cocola.feature_extraction.feature_extraction import CoColaFeatureExtractor
 import torch
 import torchaudio
 import torchaudio.transforms as T
+from pathlib import Path
 import uuid
 import os
 import sys
@@ -19,20 +20,24 @@ class CocolaMatcher(BaseMatcher):
 
     def setup(self):
         """
-        Adopted from https://github.com/gladia-research-group/cocola?tab=readme-ov-file.
-        Creates a model loaded from a checkpoint as well as feature extractor.
-        EmbeddingMode.BOTH means we are calculating scores for both harmonic and percussive.
+        Adopted from https://github.com/gladia-research-group/cocola?tab=readme-ov-file.\\
+        Creates a model loaded from a checkpoint as well as feature extractor.\\
+        EmbeddingMode.BOTH means we are calculating scores for both harmonic and percussive.\\
         Other settings are EmbeddingMode.HARMONIC and EmbeddingMode.PERCUSSIVE.
         """
+        # Load in the model.
         from matching.cocola import contrastive_model
         sys.modules['contrastive_model'] = contrastive_model
-        self.model = CoCola.load_from_checkpoint("/Users/abcheng/Documents/workspace/mashup_eval/data/cocola_model/checkpoint-epoch=87-val_loss=0.00.ckpt",
+        self.model = CoCola.load_from_checkpoint(os.path.abspath('data/cocola_model/checkpoint-epoch=87-val_loss=0.00.ckpt'),
                                                  input_type=constants.ModelInputType.DOUBLE_CHANNEL_HARMONIC_PERCUSSIVE)
         self.feature_extractor = CoColaFeatureExtractor()
         self.model.eval()
         self.model.set_embedding_mode(constants.EmbeddingMode.BOTH)
+        # Assert that stems exist.
         if self.stem_dir == None:
             raise AssertionError("Should have a valid stem directory. Run preprocess.py before proceeding.")
+        # create a subdirectory for feature vectors.
+        Path.mkdir(Path(f"{self.out_dir}/feature_vectors"), exist_ok= True)
     
     def _get_path(self, track_name, type, stored_data_path = "."):
         """
@@ -105,8 +110,8 @@ class CocolaMatcher(BaseMatcher):
         @returns a Match object if a match is feasible, otherwise None.
         """
         # first, attempt to get the features.
-        vocal_out = f"{self.out_dir}/{vocal_song}_features.pt"
-        instrumental_out  = f"{self.out_dir}/{instrumental_song}_features.pt"
+        vocal_out = f"{self.out_dir}/feature_vectors/{vocal_song}_features.pt"
+        instrumental_out  = f"{self.out_dir}/feature_vectors/{instrumental_song}_features.pt"
         vocal_features = self._get_features(vocal_song, False, vocal_out)
         instrumental_features = self._get_features(instrumental_song, True, instrumental_out)
         # then, if both features exist....

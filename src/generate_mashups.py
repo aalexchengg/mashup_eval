@@ -3,6 +3,7 @@ import argparse
 from generators.base_mashup_generator import BaseMashupGenerator
 from matching.match import Match
 import json
+import os
 
 def setup_parser():
     parser = argparse.ArgumentParser()
@@ -21,7 +22,8 @@ def setup_parser():
 def main(args):
     out_dir = args.out_dir if args.out_dir != "ignore" else None
     generator = BaseMashupGenerator.create(args.generator, out_dir)
-    with open(args.matches, 'r') as json_file:
+    matches_path = os.path.abspath(args.matches)
+    with open(matches_path, 'r') as json_file:
         matches = list(json_file)
     for json_str in matches:
         fields = json.loads(json_str)

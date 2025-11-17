@@ -1,35 +1,34 @@
 # Author @abcheng. Main function for generating matches.
 from matching.base_matcher import BaseMatcher
 import argparse
+import os
 """
 Generates matches based on the strategy and max size given by user.
-Usage: 
-python3 generate_matches.py -masher [DEFAULT: 'naive'] -max_size [DEFAULT: -1] -inp_dir [path to input directory] \
--out_dir [OPTIONAL path to output directory] -out_path [path/filename of resulting jsonl]
 """
 
 
 def setup_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-masher', type = str,
+    parser.add_argument('-matcher', type = str,
                         choices = ['naive', 'cocola'],
                         default = 'naive',
                         help = "Matcher strategy.")
     parser.add_argument('-sort', type = str,
                         choices = ['largest', 'smallest', 'unsorted'],
                         default = 'unsorted',
-                        help = "Matcher strategy.")
+                        help = "Sort strategy.")
     parser.add_argument('-max_size', type = int,
                         default = -1,
                         help = "Maximum size of the output.")
     parser.add_argument('-inp_dir', type = str,
-                        help = "Directory of all the audio samples.")
+                        required = True,
+                        help = "Directory of all the audio samples. Relative path is ok.")
     parser.add_argument('-out_dir', type = str,
-                        default = "ignore",
+                        default = "default",
                         help = "Output directory of matcher, if specified.")
     parser.add_argument('-stem_dir', type = str,
                         default = None,
-                        help = "Directory of stem tracks, if specified.")
+                        help = "Directory of stem tracks, if specified. Relative path is ok.")
     parser.add_argument('-out_path', type = str,
                         default = "match_out",
                         help = "Output path of jsonl. Is populated in out_dir if specified.")
@@ -37,9 +36,13 @@ def setup_parser():
 
 def main(args):
     # create the matcher
-    out_dir = args.out_dir if args.out_dir != "ignore" else None
-    matcher = BaseMatcher.create(args.masher, out_dir, args.stem_dir)
-    matcher.generate_matches(args.inp_dir, args.max_size, args.out_path)
+    out_dir = args.out_dir if args.out_dir != "default" else None
+    # set directories to absolute paths.
+    inp_dir = os.path.abspath(args.inp_dir)
+    stem_dir = os.path.abspath(args.stem_dir) if stem_dir else None
+    matcher = BaseMatcher.create(args.masher, out_dir, stem_dir)
+    # generate!
+    matcher.generate_matches(inp_dir, args.max_size, args.out_path)
 
 
 if __name__ == "__main__":

@@ -17,13 +17,13 @@ class BaseMatcher(ABC):
         @param out_dir: name of out_dir, if specified.
         """
         self.name = name
-        self.out_dir = self.create_out_dir(out_dir)
+        self.out_dir = self._create_out_dir(out_dir)
         self.stem_dir = stem_dir
         print(f"stem dir is {self.stem_dir} {stem_dir}")
         self.instrumental = ['bass', 'drums', 'other']
         self.setup()
 
-    def create_out_dir(self, out_dir: str) -> str:
+    def _create_out_dir(self, out_dir: str) -> str:
         """
         Creates an output directory. If nothing is passed, creates a default output directory.\\
         @param out_dir: name of output directory, if exists.\\

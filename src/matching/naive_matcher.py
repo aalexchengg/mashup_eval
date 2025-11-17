@@ -1,7 +1,7 @@
 # Author @abcheng.
 from matching.base_matcher import BaseMatcher
 from matching.match import Match
-from typing import List, Dict
+from typing import List
 import uuid
 import os
 
@@ -48,7 +48,7 @@ class NaiveMatcher(BaseMatcher):
 
 
 if __name__ == "__main__":
-    sample_directory = "/Users/abcheng/Documents/workspace/mashup_eval/data/sample"
+    sample_directory = os.path.abspath('data/sample')
     matcher = NaiveMatcher()
     matcher.generate_matches(sample_directory)
 

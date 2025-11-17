@@ -3,6 +3,16 @@ Automatic Evaluation of Machine Generated Mashups
 
 # Setup
 
+## Preliminaries
+
+Clone the repository and create the data and output directories.
+```
+git clone https://github.com/aalexchengg/mashup_eval.git
+cd git clone
+mkdir data
+mkdir out
+```
+
 ## Download the FMA Dataset
 
 You can find information about FMA [here](https://github.com/mdeff/fma). For our purposes, we use fma_small, which contains 8000 samples of music that are each 30 seconds long in a mp3 file format. While you can download the dataset by clicking on the link in the Github repository, we also give command line instructions to download it below.
@@ -16,10 +26,9 @@ If that doesn't work, try using 7zip to unzip the file
 7z x fma_small.zip
 ```
 
-Then create a data directory and move it over
+And then move it over to the data directory.
 
 ```
-mkdir data 
 mv fma_small data/
 ```
 
@@ -85,7 +94,15 @@ Rename this directory to `auto_preprocess` and drag it into your data folder.
 mv auto_preprocess data/
 ```
 
-At the end, you should have a data directory that looks like this:
+## Downloading the COCOLA model
+
+You can download the COCOLA model by downloading from the following [link](https://drive.google.com/file/d/1S-_OvnDwNFLNZD5BmI1Ouck_prutRVWZ/view?usp=share_link). 
+
+We create a `cocola_model` subdirectory and place the model in `data/cocola_model/`.
+
+## Result
+
+At the end, you should have a directory that looks like this:
 
 ```
 mashup_eval/
@@ -93,7 +110,36 @@ mashup_eval/
 │  ├─ auto_preprocess/
 │  ├─ sample/
 │  ├─ fma_small/
+│  ├─ cocola_model/
+├─ out/
 ```
 
-
 # Running Experiments
+
+## Generating Matches
+
+To generate possible matches, run the following command
+```
+python3 generate_matches.py \
+-inp_dir [path\to\audio_samples] \
+-matcher [default='naive', 'cocola'] \
+-sort [default='unsorted', 'largest', 'smallest'] \
+-max_size [default=-1] \
+-out_dir [default='{matcher}_out'] \
+-out_path [default= '{matcher}_out/match_out']
+```
+
+Of the flags, only `-inp_dir` is required; the rest all have default values. 
+
+
+## Generate Mashups
+
+To generate mashups, run the following command
+```
+python3 generate_mashups.py \
+-matches [\path\to\json\list\of\matches] \
+-generator [default='identity', 'auto'] \
+-out_dir [default=`{generator}_out`]
+```
+
+Of the flags, only `-matches` is required; the rest all have default values.

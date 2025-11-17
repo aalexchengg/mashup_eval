@@ -11,6 +11,7 @@ from generators.automashup.track import Track
 from generators.automashup.automashup_utils import key_finder, get_path
 from generators.automashup import automashup as mashupper
 import random
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class AutoMashupGenerator(BaseMashupGenerator):
         """
         Creates a preprocessing directory, so we don't have to re-preprocess each one on the fly.
         """
-        self.preprocess_dir = self.create_out_dir('/Users/abcheng/Documents/workspace/mashup_eval/data/auto_preprocess') # set as absolute path
+        self.preprocess_dir = self.create_out_dir(os.path.abspath('data/auto_preprocess')) # set as absolute path
         self.layers = ['vocals', 'bass', 'drums', 'other']
     
     
@@ -48,14 +49,14 @@ class AutoMashupGenerator(BaseMashupGenerator):
             tracks.append(candidate_track)
         # now, we want to apply the mashup function
         result = mashupper.mashup_technic_fit_phase_repitch(tracks)
-        # save output if watned.
+        # save output if wanted.
         if out:
             self.save_generation(result.audio, result.sr, out)
         return result.audio, result.sr
 
 if __name__ == "__main__":
     generator = AutoMashupGenerator("test run")
-    paths = ['/Users/abcheng/Documents/workspace/mashup_eval/data/sample/Bam Bam - Hi-Q.mp3',
-             '/Users/abcheng/Documents/workspace/mashup_eval/data/sample/ZOE.LEELA - Jewel.mp3']
+    paths = [os.path.abspath('data/sample/Bam Bam - Hi-Q.mp3'),
+             os.path.abspath('data/sample/ZOE.LEELA - Jewel.mp3')]
     generator.generate(paths, "attempt")
 
