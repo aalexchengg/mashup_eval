@@ -5,6 +5,7 @@ numpy==2.3.4
 pandas==2.3.3
 torch==2.9.0
 torchaudio==2.9.0
+torchcodec==0.8.1
 transformers==4.57.1
 pyrubberband==0.4.0
 pyloudnorm==0.1.1

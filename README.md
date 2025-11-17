@@ -37,7 +37,7 @@ mv sample data/
 ```
 conda create -n mashup && conda activate mashup
 conda install python=3.11
-conda install ffmpeg
+conda install ffmpeg<8
 ```
 
 ## Install packages
