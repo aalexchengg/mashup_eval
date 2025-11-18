@@ -5,6 +5,7 @@ from typing import Tuple
 import random
 import logging
 from typing import List, Dict
+import os
 # import functions to load in audio
 import sys
 sys.path.append("..")
@@ -28,9 +29,10 @@ class IdentityMashupGenerator(BaseMashupGenerator):
         if len(paths) == 0:
             logger.error("Attempted to generate a mashup, but no filepaths were provided. Returning empty values")
             return np.empty(0), 0
+        logger.info("Loading in audio of first path...")
         x1, sr1 = decode_audio(paths[0])
         if out:
-            self.save_generation(x1, sr1, out)
+            self._save_generation(x1, sr1, out)
         return x1, sr1
 
 
@@ -42,7 +44,7 @@ if __name__ == "__main__":
     generator = IdentityMashupGenerator("test_mashup", "tmp")
     logger.info("Loading and sampling files...")
     # randomly sample two audio paths and create the generation
-    paths = get_fma_paths("/Users/abcheng/Documents/workspace/mashup_eval/data") # Replace with your own path
+    paths = get_fma_paths(os.path.abspath('data')) # Replace with your own path
     samples = random.sample(paths, 2)
     logger.info("Generating and checking equality...")
     generator.generate(samples, "x1_copy")

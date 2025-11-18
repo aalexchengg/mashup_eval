@@ -1,9 +1,12 @@
 # Author @abcheng.
 from matching.base_matcher import BaseMatcher
 from matching.match import Match
-from typing import List, Dict
+from typing import List
 import uuid
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class NaiveMatcher(BaseMatcher):
     """
@@ -16,6 +19,7 @@ class NaiveMatcher(BaseMatcher):
         @param sample_directory: directory where all the songs exists.\\
         @param max_size: maximum size of the resulting json list. -1 means unchanged.\\
         @param out_path: output_path of the resulting jsonl file. if an out_dir was created, we write to that directory.\\
+        @param sort: UNUSED parameter, since all matches trivially have score of 0.
         @returns a list of Match objects, which represents matches.
         """
         result = []
@@ -25,6 +29,7 @@ class NaiveMatcher(BaseMatcher):
                 all_songs.append(entry_name)
         # create pairwise entries with no repeats.
         # this also assumes there are no duplicates.
+        logger.info("Generating matches naively...")
         for i in range (len(all_songs)):
             for j in range(i+1, len(all_songs)):
                 # create a match with default score of 0.0
@@ -39,6 +44,7 @@ class NaiveMatcher(BaseMatcher):
         # write to out path
         if self.out_dir:
             out_path = f"{self.out_dir}/{out_path}"
+        logger.info(f"Writing to {out_path}.jsonl...")
         with open(f"{out_path}.jsonl", "w") as file:
             for item in result:
                 file.write(item.to_json() + '\n')
@@ -48,7 +54,7 @@ class NaiveMatcher(BaseMatcher):
 
 
 if __name__ == "__main__":
-    sample_directory = "/Users/abcheng/Documents/workspace/mashup_eval/data/sample"
+    sample_directory = os.path.abspath('data/sample')
     matcher = NaiveMatcher()
     matcher.generate_matches(sample_directory)
 
