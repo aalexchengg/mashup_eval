@@ -20,7 +20,7 @@ class BaseMashupGenerator(ABC):
         @param generate_out_dir: whether to generate the output directory for this mashup generator,
         """
         self.name = name
-        self.out_dir = self.create_out_dir(out_dir)
+        self.out_dir = self._create_out_dir(out_dir)
         self._setup()
     
     def _setup(self):
@@ -35,7 +35,7 @@ class BaseMashupGenerator(ABC):
         """
         return self.name 
     
-    def create_out_dir(self, out_dir: str) -> str:
+    def _create_out_dir(self, out_dir: str) -> str:
         """
         Creates an output directory. If nothing is passed, creates a default output directory.\\
         @param out_dir: name of output directory, if exists.\\
