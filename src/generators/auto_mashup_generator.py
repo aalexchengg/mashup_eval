@@ -12,16 +12,19 @@ from generators.automashup.automashup_utils import key_finder, get_path
 from generators.automashup import automashup as mashupper
 import random
 import os
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 class AutoMashupGenerator(BaseMashupGenerator):
 
-    def setup(self):
+    def _setup(self):
         """
         Creates a preprocessing directory, so we don't have to re-preprocess each one on the fly.
         """
-        self.preprocess_dir = self.create_out_dir(os.path.abspath('data/auto_preprocess')) # set as absolute path
+        parent = os.path.abspath("../data")
+        self.preprocess_dir = f"{parent}/auto_preprocess"
+        Path.mkdir(Path(self.preprocess_dir), exist_ok= True)
         self.layers = ['vocals', 'bass', 'drums', 'other']
     
     
@@ -33,6 +36,7 @@ class AutoMashupGenerator(BaseMashupGenerator):
         @return y, sr: the audio and the sampling rate of the resulting mashup.
         """
         songs = defaultdict(lambda: list()) # key is layer, value is list of songs with the layer
+        logger.info("Processing path for generation....")
         for path in paths:
             # preprocessing should have already occurred.
             key_finder(path, stored_data_path=self.preprocess_dir)
@@ -44,19 +48,25 @@ class AutoMashupGenerator(BaseMashupGenerator):
         # we're going to randomly choose from the paths we have and generate our mashups
         tracks = []
         for layer, candidates in songs.items():
-            candidate = layers[layer] if layers != None and layers[layer] != None else random.choice(candidates)
+            if layers != None and layers[layer] != None:
+                logger.info(f"Specified song found for layer {layer}!")
+                candidate = layers[layer]
+            else:
+                logger.info(f"Could not find specified song. Randomly selecting from candidates.")
+                candidate = random.choice(candidates)
             candidate_track = Track.track_from_song(candidate, type=layer, stored_data_path=self.preprocess_dir)
             tracks.append(candidate_track)
         # now, we want to apply the mashup function
+        logger.info("Creating the mashup....")
         result = mashupper.mashup_technic_fit_phase_repitch(tracks)
         # save output if wanted.
         if out:
-            self.save_generation(result.audio, result.sr, out)
+            self._save_generation(result.audio, result.sr, out)
         return result.audio, result.sr
 
 if __name__ == "__main__":
     generator = AutoMashupGenerator("test run")
-    paths = [os.path.abspath('data/sample/Bam Bam - Hi-Q.mp3'),
-             os.path.abspath('data/sample/ZOE.LEELA - Jewel.mp3')]
+    paths = [os.path.abspath('../data/sample/Bam Bam - Hi-Q.mp3'),
+             os.path.abspath('../data/sample/ZOE.LEELA - Jewel.mp3')]
     generator.generate(paths, "attempt")
 

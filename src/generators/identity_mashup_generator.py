@@ -29,9 +29,10 @@ class IdentityMashupGenerator(BaseMashupGenerator):
         if len(paths) == 0:
             logger.error("Attempted to generate a mashup, but no filepaths were provided. Returning empty values")
             return np.empty(0), 0
+        logger.info("Loading in audio of first path...")
         x1, sr1 = decode_audio(paths[0])
         if out:
-            self.save_generation(x1, sr1, out)
+            self._save_generation(x1, sr1, out)
         return x1, sr1
 
 

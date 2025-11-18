@@ -2,10 +2,11 @@
 from matching.base_matcher import BaseMatcher
 import argparse
 import os
+import logging
 """
 Generates matches based on the strategy and max size given by user.
 """
-
+logger = logging.getLogger(__name__)
 
 def setup_parser():
     parser = argparse.ArgumentParser()
@@ -32,17 +33,33 @@ def setup_parser():
     parser.add_argument('-out_path', type = str,
                         default = "match_out",
                         help = "Output path of jsonl. Is populated in out_dir if specified.")
+    parser.add_argument('-verbose', type = bool,
+                        default = False,
+                        action = argparse.BooleanOptionalAction,
+                        help = "Whether to output INFO level logs.")
     return parser
 
 def main(args):
+    # turn on verbose mode if true.
+    if args.verbose:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        )
     # create the matcher
     out_dir = args.out_dir if args.out_dir != "default" else None
     # set directories to absolute paths.
     inp_dir = os.path.abspath(args.inp_dir)
-    stem_dir = os.path.abspath(args.stem_dir) if stem_dir else None
-    matcher = BaseMatcher.create(args.masher, out_dir, stem_dir)
+    stem_dir = os.path.abspath(args.stem_dir) if args.stem_dir else None
+    logger.info(f"Input directory path is {inp_dir}.")
+    if stem_dir:
+        logger.info(f"Stem directory exists, and path is at {stem_dir}.")
+    logger.info(f"Creating a {args.matcher} matcher...")
+    matcher = BaseMatcher.create(args.matcher, out_dir, stem_dir)
     # generate!
-    matcher.generate_matches(inp_dir, args.max_size, args.out_path)
+    logger.info(f"Generating matches with max size: {args.max_size} sort strategy {args.sort}.")
+    matcher.generate_matches(inp_dir, args.max_size, args.out_path, args.sort)
+    logger.info("All done.")
 
 
 if __name__ == "__main__":

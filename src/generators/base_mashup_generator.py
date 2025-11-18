@@ -21,9 +21,9 @@ class BaseMashupGenerator(ABC):
         """
         self.name = name
         self.out_dir = self.create_out_dir(out_dir)
-        self.setup()
+        self._setup()
     
-    def setup(self):
+    def _setup(self):
         """
         Optional method to do post initialization.
         """
@@ -44,11 +44,12 @@ class BaseMashupGenerator(ABC):
         if out_dir == None:
             out_dir = f"{self.name}_out"
             logger.info(f"No output directory passed. setting it as {out_dir}")
-        Path.mkdir(Path(out_dir), exist_ok= True)
-        return out_dir
+        parent = os.path.abspath("../out")
+        Path.mkdir(Path(f"{parent}/{out_dir}"), exist_ok= True)
+        return f"{parent}/{out_dir}"
 
         
-    def save_generation(self, x: np.ndarray, sr: int, filename: str) -> None:
+    def _save_generation(self, x: np.ndarray, sr: int, filename: str) -> None:
         """
         Saves a generated audio to a filename.\\
         @param x: np array representing the audio.\\
@@ -57,6 +58,7 @@ class BaseMashupGenerator(ABC):
         """
         # Based on: https://stackoverflow.com/questions/73239578/couldnt-store-audio-as-mp3-file-using-soundfile
         # Since FMA is a mp3 dataset, so we need to transpose.
+        logger.info(f"Saving generation to {self.out_dir}/{filename}.wav...")
         sf.write(f"{self.out_dir}/{filename}.wav", np.transpose(x), sr)
 
 

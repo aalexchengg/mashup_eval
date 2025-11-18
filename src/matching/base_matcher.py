@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Dict 
 from matching.match import Match
+import os
 import logging 
 
 logger = logging.getLogger(__name__)
@@ -11,7 +12,7 @@ class BaseMatcher(ABC):
     """
     A very empty base class that defines the function signature for a Matcher.
     """
-    def __init__(self, name, out_dir :str = None, stem_dir: str = None):
+    def __init__(self, name, out_dir: str = None, stem_dir: str = None):
         """
         Initializes, and creates an output directory if specified.\\
         @param out_dir: name of out_dir, if specified.
@@ -19,9 +20,8 @@ class BaseMatcher(ABC):
         self.name = name
         self.out_dir = self._create_out_dir(out_dir)
         self.stem_dir = stem_dir
-        print(f"stem dir is {self.stem_dir} {stem_dir}")
         self.instrumental = ['bass', 'drums', 'other']
-        self.setup()
+        self._setup()
 
     def _create_out_dir(self, out_dir: str) -> str:
         """
@@ -32,10 +32,11 @@ class BaseMatcher(ABC):
         if out_dir == None:
             out_dir = f"{self.name}_out"
             logger.info(f"No output directory passed. setting it as {out_dir}")
-        Path.mkdir(Path(out_dir), exist_ok= True)
-        return out_dir
+        parent = os.path.abspath("../out")
+        Path.mkdir(Path(f"{parent}/{out_dir}"), exist_ok= True)
+        return f"{parent}/{out_dir}"
     
-    def setup(self):
+    def _setup(self):
         # optional setup method to override.
         pass
 
