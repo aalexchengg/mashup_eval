@@ -84,6 +84,7 @@ def main(args):
     timestamp_string = current_time.strftime("%Y-%m-%d_%H-%M")
 
     all_metrics = []
+    all_nlls = []
     out_csv = os.path.join(out_path, f"computed_values_{timestamp_string}.csv")
     csv_data = [["file_path", "is_centroid_distance", "d_HO", "NLL", "C_MU"]]
     out_txt = os.path.join(out_path, f"metric_summary_{timestamp_string}.txt")
@@ -100,6 +101,7 @@ def main(args):
 
             csv_data.append([file_path, do_centroid, d_HO, NLL, C_MU])
             all_metrics.append(C_MU)
+            all_nlls.append(NLL)
             num_audio_eval += 1
         if num_audio_eval == 0: 
             raise Exception("no valid wav files were found in audio path. " \
@@ -114,6 +116,7 @@ def main(args):
 
         csv_data.append([audio_path, do_centroid, d_HO, NLL, C_MU])
         all_metrics.append(C_MU)
+        all_nlls.append(NLL)
         num_audio_eval += 1
 
     # incorrect input
@@ -126,8 +129,10 @@ def main(args):
         writer.writerows(csv_data)
     
     all_metrics = np.array(all_metrics)
-    mean_metric = np.mean(all_metrics)
-    stdev_metric = np.std(all_metrics)
+    mean_metric, stdev_metric = np.mean(all_metrics), np.std(all_metrics)
+
+    all_nlls = np.array(all_nlls)
+    mean_nll, stdev_nll = np.mean(all_nlls), np.std(all_nlls)
     out_text = []
     out_text.append(f"Evaluation Metric: C_MU")
     out_text.append(f"Evaluation of {audio_path} using holdout set {holdout_path}" \
@@ -137,6 +142,9 @@ def main(args):
                     " in holdout set")
     out_text.append(f"Mean C_MU: {mean_metric:.4f}")
     out_text.append(f"Standard Deviation C_MU: {stdev_metric:.4f}")
+    out_text.append(f"Alternative Evaluation Metric of NLL (on MusicGen):")
+    out_text.append(f"Mean NLL: {mean_nll:.4f}")
+    out_text.append(f"Standard Deviation NLL: {stdev_nll:.4f}")
     
     with open(out_txt, 'w') as f: 
         f.writelines([line + "\n" for line in out_text])
