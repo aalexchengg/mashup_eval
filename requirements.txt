@@ -19,3 +19,4 @@ pydub==0.25.1
 nnAudio==0.3.3
 tqdm==4.67.1
 soundfile==0.13.1
+gdown==5.2.0
