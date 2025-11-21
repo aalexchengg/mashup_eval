@@ -2,17 +2,17 @@
 # Setup file for creating the environment in a Linux HPC.
 
 # Generate directories to populate files.
-# mkdir data
-# mkdir out
+mkdir data
+mkdir out
 
-# echo "Creating Environment...."
-# # Load in global conda
-# module load anaconda3/2024.10-1
-# # create the conda environment
-# conda create -n mashup && conda activate mashup
-# conda install python=3.11
-# conda install ffmpeg<8
-# pip install -r requirements.txt
+echo "Creating Environment...."
+# Load in global conda
+module load anaconda3/2024.10-1
+# create the conda environment
+conda create -n mashup && conda activate mashup
+conda install python=3.11
+conda install ffmpeg
+pip install -r requirements.txt
 
 echo "Downloading Data..."
 
@@ -59,8 +59,8 @@ if [ ! -d $PREPROCESS_DIRECTORY ]; then
   unzip out-20251113T044448Z-1-001.zip -d preprocess_out_0
   unzip out-20251113T044448Z-1-002.zip -d preprocess_out_1
   mkdir $PREPROCESS_DIRECTORY
-  cp -r preprocess_out_0 $PREPROCESS_DIRECTORY
-  cp -r preprocess_out_1 $PREPROCESS_DIRECTORY
+  cp -r preprocess_out_0/out/* $PREPROCESS_DIRECTORY
+  cp -r preprocess_out_1/out/* $PREPROCESS_DIRECTORY
   # cleanup
   rm -rf preprocess_out_0
   rm -rf preprocess_out_1
@@ -69,5 +69,8 @@ if [ ! -d $PREPROCESS_DIRECTORY ]; then
 else
   echo "Directory '$PREPROCESS_DIRECTORY' exists. Skipping this part."
 fi
+
+echo "Generating the holdout set..."
+python3 -m src.prepare.prepare_holdout_dir
 
 echo "Environment Setup Complete!"

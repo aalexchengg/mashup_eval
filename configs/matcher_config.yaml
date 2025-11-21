@@ -1,0 +1,8 @@
+matcher: naive
+inp_dir: data/sample
+out_dir: cocola_out_test
+out_path: match_out
+sort: largest
+max_size: 10
+stem_dir: data/auto_preprocess_smol
+

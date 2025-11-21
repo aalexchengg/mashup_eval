@@ -8,7 +8,7 @@ from torch import nn
 from torch.nn import functional as F
 from efficientnet_pytorch import EfficientNet
 
-from matching.cocola.contrastive_model import constants
+from src.matching.cocola.contrastive_model import constants
 
 
 class BilinearSimilarity(nn.Module):

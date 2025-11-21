@@ -11,6 +11,7 @@ git clone https://github.com/aalexchengg/mashup_eval.git
 cd git clone
 mkdir data
 mkdir out
+mkdir logs # this is for if you're running on a cluster.
 ```
 
 **IMPORTANT**: For all documentation, assume you are running from the root folder `mashup_eval/`.
@@ -27,7 +28,7 @@ bash initial_setup.sh
 ```
 conda create -n mashup && conda activate mashup
 conda install python=3.11
-conda install ffmpeg<8
+conda install ffmpeg
 pip install -r requirements.txt
 ```
 
@@ -62,6 +63,19 @@ else
   echo "Directory '$SAMPLE_DIRECTORY' exists. Skipping this part."
 fi
 ```
+
+### Creating the Holdout Directory
+
+A helper file to generate a holdout set for evaluation purposes (to be used in the future, e.g. during `holdout_set_generator`). Takes a subset of files from an unprocessed FMA dataset folder, which consists of only mp3 files. Run the following command in the root folder:
+
+```
+python -m src.evaluate.prepare_holdout_dir
+```
+
+Options: 
+- `-f` `--fma-path`: path of the FMA folder (defaults to `data/fma_small`)
+- `-p` `--percent`: percentage of FMA folder to take (defaults to `0.1`)
+- `-s` `--save-path`: folder to save holdout set (defaults to `data/holdout_set`)
 
 ### Preprocess the subset dataset
 
@@ -129,8 +143,10 @@ At the end, you should have a directory that looks like this:
 
 ```
 mashup_eval/
+├─ configs/
 ├─ data/
 │  ├─ auto_preprocess/
+│  ├─ holdout_set/
 │  ├─ sample/
 │  ├─ fma_small/
 │  ├─ cocola_model/
@@ -144,6 +160,28 @@ Our three main scripts are
 - `generate_mashups.py` Iterates through the matches created in the previous step and generates mashups.
 - `evaluate_mashups.py` Iterates through the generated mashups and creates an evaluation score for each of them.
 
-More information about each script can be found in the README of their associated subdirectory. In this section, we will provide information about how to run end-to-end experiments.
+More information about each script and how to run them individually can be found in the README of their associated subdirectory. In this section, we will provide information about how to run end-to-end experiments.
+
+The main command is 
+
+```
+bash run_experiment.sh all
+```
+
+This will run an end-to-end experiment, and will call all three scripts. If you want to only run one part of the script, you can run
+
+```
+bash run_experiment.sh [match/mash/evaluate]
+```
+
+Which will run just that section.
+
+## Configurations
+
+To configure each script in the main run file, simply modify the associated `.yaml` file in the configurations folder.
+
+- `configs/matcher_config.yaml` Will be the configurations associated with `generate_matches.py`
+- `configs/mashup_config.yaml` Will be the configurations associated with `generate_mashups.py`
+- `configs/evaluate_config.yaml` Will be the configurations associated with `evaluate_matches.py`
 
 
