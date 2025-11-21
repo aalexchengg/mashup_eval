@@ -69,7 +69,7 @@ fi
 A helper file to generate a holdout set for evaluation purposes (to be used in the future, e.g. during `holdout_set_generator`). Takes a subset of files from an unprocessed FMA dataset folder, which consists of only mp3 files. Run the following command in the root folder:
 
 ```
-python -m src.evaluate.prepare_holdout_dir
+python -m src.prepare.prepare_holdout_dir
 ```
 
 Options: 
@@ -107,8 +107,8 @@ if [ ! -d $PREPROCESS_DIRECTORY ]; then
   unzip out-20251113T044448Z-1-001.zip -d preprocess_out_0
   unzip out-20251113T044448Z-1-002.zip -d preprocess_out_1
   mkdir $PREPROCESS_DIRECTORY
-  cp -r preprocess_out_0 $PREPROCESS_DIRECTORY
-  cp -r preprocess_out_1 $PREPROCESS_DIRECTORY
+  cp -r preprocess_out_0/out/* $PREPROCESS_DIRECTORY
+  cp -r preprocess_out_1/out/* $PREPROCESS_DIRECTORY
   # cleanup
   rm -rf preprocess_out_0
   rm -rf preprocess_out_1
