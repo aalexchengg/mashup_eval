@@ -2,7 +2,6 @@
 # Extract NLL from MusicGen
 
 import torch
-import numpy as np
 import librosa
 from functools import cache
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
@@ -25,7 +24,6 @@ class NLLExtractor:
         self.basic_cache = dict()
 
     def get_nll_musicgen(self, audio, sr):
-        print(f"audio shape is {audio.shape}")
         inputs = self.processor(
             audio=audio,
             sampling_rate=sr,
