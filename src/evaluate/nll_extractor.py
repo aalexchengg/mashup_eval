@@ -2,6 +2,7 @@
 # Extract NLL from MusicGen
 
 import torch
+import numpy as np
 import librosa
 from functools import cache
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
@@ -14,6 +15,7 @@ class NLLExtractor:
         self.model = MusicgenForConditionalGeneration.from_pretrained(
             model_name
         ).to(self.device)
+        self.model.config.decoder.decoder_start_token_id = 2048 # we have to do this now i guess
 
         # turn off text conditioning
         self.model.config.use_text_conditioning = False        
@@ -23,31 +25,22 @@ class NLLExtractor:
         self.basic_cache = dict()
 
     def get_nll_musicgen(self, audio, sr):
+        print(f"audio shape is {audio.shape}")
         inputs = self.processor(
             audio=audio,
             sampling_rate=sr,
-            text=None,
+            text=[""],
             return_tensors="pt"
         ).to(self.device)
 
         with torch.no_grad():
             enc = self.model.audio_encoder.encode(inputs["input_values"])
-            codes = enc.audio_codes.squeeze(1)  
-
-            decoder_input_ids = codes[..., :-1]
-            labels = codes[..., 1:]
-
-            batch_size = codes.shape[0]
-
-            dummy_text_ids = torch.zeros((batch_size, 1), 
-                                         dtype=torch.long, device=self.device)
-            dummy_text_mask = torch.ones_like(dummy_text_ids)
-
+            codes = enc.audio_codes.squeeze(1)
+            labels = codes.permute(0, 2, 1).long()
             outputs = self.model(
-                input_ids=dummy_text_ids,            
-                attention_mask=dummy_text_mask,      
-                decoder_input_ids=decoder_input_ids, 
-                labels=labels                        
+                input_ids=inputs["input_ids"],
+                attention_mask=inputs["attention_mask"],
+                labels=labels
             )
 
         return outputs.loss.item()
@@ -62,8 +55,8 @@ class NLLExtractor:
             return self.basic_cache[audio_file_path]
         
         if "musicgen" in self.model_name:
-            audio, sr = librosa.load(audio_file_path, sr=self.sr)
-            return self.get_nll_musicgen(audio, sr)
+            audio, sr = librosa.load(audio_file_path, sr = self.sr)
+            return self.get_nll_musicgen(audio, self.sr)
         else:
             raise Exception("model type not supported -- currently only " \
             "MERT-like models are supported")
@@ -71,11 +64,13 @@ class NLLExtractor:
 if __name__ == "__main__":
     # test it works
     extractor = NLLExtractor()
-    sample_file_path = "/Users/lizchu413/Downloads/tv_static_sound_effect_-_bzz.m4a"
+    filepaths = ['good.wav', 'bad.wav', 'tv_static_sound_effect_-_bzz.wav']
+    for fp in filepaths:
+        full_path = f"/Users/abcheng/Documents/workspace/mashup_eval/data/smaller_sample//{fp}"
+        print(f"loading in sample waveform {full_path}...")
+        nll = extractor.get_nll(full_path)
+        print(f"NLL: {nll:.4f}")
 
-    print(f"loading in sample waveform {sample_file_path}...")
 
-    nll = extractor.get_nll(sample_file_path)
-
-    print(f"NLL: {nll:.4f}")
+    
     
