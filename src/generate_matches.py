@@ -1,5 +1,6 @@
 # Author @abcheng. Main function for generating matches.
-from matching.base_matcher import BaseMatcher
+from src.matching.base_matcher import BaseMatcher
+import yaml
 import argparse
 import os
 import logging
@@ -26,7 +27,7 @@ def setup_parser():
                         help = "Directory of all the audio samples. Relative path is ok.")
     parser.add_argument('-out_dir', type = str,
                         default = "default",
-                        help = "Output directory of matcher, if specified.")
+                        help = "Output directory of matcher, if specified. Will be created in out/")
     parser.add_argument('-stem_dir', type = str,
                         default = None,
                         help = "Directory of stem tracks, if specified. Relative path is ok.")
@@ -37,6 +38,9 @@ def setup_parser():
                         default = False,
                         action = argparse.BooleanOptionalAction,
                         help = "Whether to output INFO level logs.")
+    parser.add_argument('-config', type = str,
+                        default = None,
+                        help = "accepts yaml config files as well.")
     return parser
 
 def main(args):
@@ -65,4 +69,11 @@ def main(args):
 if __name__ == "__main__":
     parser = setup_parser()
     args = parser.parse_args()
+    # optional config override.
+    if args.config:
+        with open(args.config, "r") as f:
+            config = yaml.safe_load(f)
+        # Overwrite args with config values
+        for key, value in config.items():
+            setattr(args, key, value)
     main(args)

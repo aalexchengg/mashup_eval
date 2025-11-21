@@ -1,0 +1,5 @@
+audio-path: out/identity_out_test
+centroid: true
+out: out/eval_output
+k: 0.5
+p: data/holdout_set

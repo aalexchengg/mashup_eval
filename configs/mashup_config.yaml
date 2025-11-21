@@ -1,0 +1,3 @@
+generator: identity
+matches: out/cocola_out_test/match_out.jsonl 
+out_dir: identity_out_test

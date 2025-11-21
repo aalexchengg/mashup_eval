@@ -1,10 +1,11 @@
 # Author @abcheng. Main function for generating mashups.
 import argparse
-from generators.base_mashup_generator import BaseMashupGenerator
-from matching.match import Match
+from src.generators.base_mashup_generator import BaseMashupGenerator
+from src.matching.match import Match
 import json
 import os
 from tqdm import tqdm
+import yaml
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,9 @@ def setup_parser():
                         default = False,
                         action = argparse.BooleanOptionalAction,
                         help = "Whether to output INFO level logs.")
+    parser.add_argument('-config', type = str,
+                        default = None,
+                        help = "accepts yaml config files as well.")
     return parser
 
 def main(args):
@@ -57,4 +61,11 @@ def main(args):
 if __name__ == "__main__":
     parser = setup_parser()
     args = parser.parse_args()
+    # optional config override.
+    if args.config:
+        with open(args.config, "r") as f:
+            config = yaml.safe_load(f)
+        # Overwrite args with config values
+        for key, value in config.items():
+            setattr(args, key, value)
     main(args)

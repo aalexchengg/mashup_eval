@@ -1,5 +1,5 @@
 # Author: @abcheng
-from generators.base_mashup_generator import BaseMashupGenerator
+from src.generators.base_mashup_generator import BaseMashupGenerator
 import numpy as np
 from typing import Tuple
 import random
@@ -8,8 +8,7 @@ from typing import List, Dict
 import os
 # import functions to load in audio
 import sys
-sys.path.append("..")
-from utils import get_fma_paths, decode_audio
+from src.utils import get_fma_paths, decode_audio
 
 logger = logging.getLogger(__name__)
 

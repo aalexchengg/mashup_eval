@@ -1,5 +1,5 @@
 # Author: @abcheng. Adopted from https://github.com/ax-le/automashup/blob/main/automashup/Notebooks/Tutorial%20notebook%20-%20make%20a%20mashup.ipynb.
-from generators.base_mashup_generator import BaseMashupGenerator
+from src.generators.base_mashup_generator import BaseMashupGenerator
 import numpy as np
 from typing import Tuple
 import random
@@ -7,9 +7,9 @@ import logging
 from typing import List, Dict
 from collections import defaultdict
 
-from generators.automashup.track import Track
-from generators.automashup.automashup_utils import key_finder, get_path
-from generators.automashup import automashup as mashupper
+from src.generators.automashup.track import Track
+from src.generators.automashup.automashup_utils import key_finder, get_path
+from src.generators.automashup import automashup as mashupper
 import random
 import os
 from pathlib import Path
@@ -22,7 +22,7 @@ class AutoMashupGenerator(BaseMashupGenerator):
         """
         Creates a preprocessing directory, so we don't have to re-preprocess each one on the fly.
         """
-        parent = os.path.abspath("../data")
+        parent = os.path.abspath("data")
         self.preprocess_dir = f"{parent}/auto_preprocess"
         Path.mkdir(Path(self.preprocess_dir), exist_ok= True)
         self.layers = ['vocals', 'bass', 'drums', 'other']
@@ -66,7 +66,7 @@ class AutoMashupGenerator(BaseMashupGenerator):
 
 if __name__ == "__main__":
     generator = AutoMashupGenerator("test run")
-    paths = [os.path.abspath('../data/sample/Bam Bam - Hi-Q.mp3'),
-             os.path.abspath('../data/sample/ZOE.LEELA - Jewel.mp3')]
+    paths = [os.path.abspath('data/sample/Bam Bam - Hi-Q.mp3'),
+             os.path.abspath('data/sample/ZOE.LEELA - Jewel.mp3')]
     generator.generate(paths, "attempt")
 

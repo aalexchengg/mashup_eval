@@ -7,9 +7,11 @@ import csv
 import os
 import numpy as np
 import tqdm
+import yaml
 from datetime import datetime
 from src.evaluate.holdout_set import HoldoutSet
 from src.evaluate.nll_extractor import NLLExtractor
+
 
 def setup_parser():
     parser = argparse.ArgumentParser()
@@ -32,9 +34,9 @@ def setup_parser():
     parser.add_argument(
         "-o", "--output-path", 
         type=str, 
-        default=os.path.join("data", "eval_output"), 
+        default=os.path.join("out", "eval_output"), 
         help="directory where output should be stored. " \
-        "default is data/eval_output."
+        "default is out/eval_output."
     )
 
     parser.add_argument(
@@ -51,6 +53,9 @@ def setup_parser():
         help="path (from root) of directory holding only and all" \
         " holdout set .wav files"
     )
+    parser.add_argument('-config', type = str,
+                        default = None,
+                        help = "accepts yaml config files as well.")
     return parser
 
 def metric(k, d_HO, NLL): 
@@ -153,4 +158,11 @@ def main(args):
 if __name__ == "__main__":
     parser = setup_parser()
     args = parser.parse_args()
+    # optional config override.
+    if args.config:
+        with open(args.config, "r") as f:
+            config = yaml.safe_load(f)
+        # Overwrite args with config values
+        for key, value in config.items():
+            setattr(args, key, value)
     main(args)

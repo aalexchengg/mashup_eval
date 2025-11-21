@@ -1,18 +1,5 @@
 # Evaluation Suite
 
-## Creating the Holdout Directory
-
-A helper file to generate a holdout set for evaluation purposes (to be used in the future, e.g. during `holdout_set_generator`). Takes a subset of files from an unprocessed FMA dataset folder, which consists of only mp3 files. Run the following command in the root folder:
-
-```
-python -m src.evaluate.prepare_holdout_dir
-```
-
-Options: 
-- `-f` `--fma-path`: path of the FMA folder (defaults to `data/fma_small`)
-- `-p` `--percent`: percentage of FMA folder to take (defaults to `0.1`)
-- `-s` `--save-path`: folder to save holdout set (defaults to `data/holdout_set`)
-
 ## Running the Evaluator
 
 Our proposed evaluation metric insofar is calculated by $$C_{MU}(x) = \frac{k \cdot d_{HO}(x)}{(1-k) \cdot NLL(x)}$$

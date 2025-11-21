@@ -1,10 +1,10 @@
 # Author @abcheng.
-from matching.base_matcher import BaseMatcher
-from matching.match import Match
+from src.matching.base_matcher import BaseMatcher
+from src.matching.match import Match
 from typing import List, Optional
-from matching.cocola.contrastive_model import constants
-from matching.cocola.contrastive_model.contrastive_model import CoCola
-from matching.cocola.feature_extraction.feature_extraction import CoColaFeatureExtractor
+from src.matching.cocola.contrastive_model import constants
+from src.matching.cocola.contrastive_model.contrastive_model import CoCola
+from src.matching.cocola.feature_extraction.feature_extraction import CoColaFeatureExtractor
 import torch
 import torchaudio
 import torchaudio.transforms as T
@@ -15,6 +15,7 @@ import sys
 import logging
 
 logger = logging.getLogger(__name__)
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 class CocolaMatcher(BaseMatcher):
     """
@@ -29,13 +30,14 @@ class CocolaMatcher(BaseMatcher):
         Other settings are EmbeddingMode.HARMONIC and EmbeddingMode.PERCUSSIVE.
         """
         # Load in the model.
-        from matching.cocola import contrastive_model
+        from src.matching.cocola import contrastive_model
         sys.modules['contrastive_model'] = contrastive_model
-        model_path = os.path.abspath('../data/cocola_model/checkpoint-epoch=87-val_loss=0.00.ckpt')
+        model_path = os.path.abspath('data/cocola_model/checkpoint-epoch=87-val_loss=0.00.ckpt')
         logger.info(f"Loading COCOLA model from {model_path}...")
         self.model = CoCola.load_from_checkpoint(model_path,
                                                  input_type=constants.ModelInputType.DOUBLE_CHANNEL_HARMONIC_PERCUSSIVE)
-        self.feature_extractor = CoColaFeatureExtractor()
+        self.model = self.model.to(device)
+        self.feature_extractor = CoColaFeatureExtractor().to(device)
         self.model.eval()
         self.model.set_embedding_mode(constants.EmbeddingMode.BOTH)
         logger.info("Finished loading model and feature extractor.")
@@ -106,7 +108,7 @@ class CocolaMatcher(BaseMatcher):
             return None
         # extract the features of the resulting waveform!
         logger.info("Extracting features...")
-        features = self.feature_extractor(result_waveform)
+        features = self.feature_extractor(result_waveform.to(device))
         # save if needed
         if out:
             logger.info(f"Saving feature vector to {out}...")
@@ -124,8 +126,8 @@ class CocolaMatcher(BaseMatcher):
         # first, attempt to get the features.
         logger.info("Begin match building.")
         logger.info("Extracting features...")
-        vocal_out = f"{self.out_dir}/feature_vectors/{vocal_song}_features.pt"
-        instrumental_out  = f"{self.out_dir}/feature_vectors/{instrumental_song}_features.pt"
+        vocal_out = f"data/feature_vectors/{vocal_song}_features.pt"
+        instrumental_out  = f"data/feature_vectors/{instrumental_song}_features.pt"
         vocal_features = self._get_features(vocal_song, False, vocal_out)
         instrumental_features = self._get_features(instrumental_song, True, instrumental_out)
         # then, if both features exist....
@@ -134,7 +136,7 @@ class CocolaMatcher(BaseMatcher):
             # get the max length for truncation (lengths must match + computational complexity)
             max_length = min(vocal_features.shape[-1], instrumental_features.shape[-1], 100) # TODO: smarter way to set max_length? If its too large, it kills the program.
             # calculate the harmonic and percussive score, and get the average
-            composite_score = self.model.score(vocal_features[..., :max_length], instrumental_features[..., :max_length])
+            composite_score = self.model.score(vocal_features[..., :max_length].to(device), instrumental_features[..., :max_length].to(device))
             score = composite_score.mean().item()
             # finally, construct the match object and return it.
             layers = {"vocals": vocal_song, "bass": instrumental_song, "drums": instrumental_song, "other": instrumental_song}

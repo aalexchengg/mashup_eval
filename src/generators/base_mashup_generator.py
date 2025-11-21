@@ -44,7 +44,7 @@ class BaseMashupGenerator(ABC):
         if out_dir == None:
             out_dir = f"{self.name}_out"
             logger.info(f"No output directory passed. setting it as {out_dir}")
-        parent = os.path.abspath("../out")
+        parent = os.path.abspath("out")
         Path.mkdir(Path(f"{parent}/{out_dir}"), exist_ok= True)
         return f"{parent}/{out_dir}"
 
@@ -84,10 +84,10 @@ class BaseMashupGenerator(ABC):
         """
         name = name.lower()
         if "identity" in name:
-            from generators.identity_mashup_generator import IdentityMashupGenerator
+            from src.generators.identity_mashup_generator import IdentityMashupGenerator
             return IdentityMashupGenerator(name, out_dir)
         elif "auto" in name:
-            from generators.auto_mashup_generator import AutoMashupGenerator
+            from src.generators.auto_mashup_generator import AutoMashupGenerator
             return AutoMashupGenerator(name, out_dir)
         else:
             raise ValueError(f"Unsupported generator key: {name}")
