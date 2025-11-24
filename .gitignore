@@ -3,6 +3,7 @@
 *fma_small.zip
 # Any outputs
 *out/
+*logs/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

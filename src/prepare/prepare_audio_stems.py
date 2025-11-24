@@ -7,7 +7,7 @@ import allin1
 # drive.mount('/content/drive', force_remount=True)
 
 
-directory_path = os.path.abspath('../data/sample') # double check that this works on your machine.
+directory_path = os.path.abspath('/data/sample') # double check that this works on your machine.
 out_dir = "auto_preprocess"
 for entry_name in os.listdir(directory_path):
     # assert that the entry name is not a csv

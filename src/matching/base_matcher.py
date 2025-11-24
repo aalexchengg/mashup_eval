@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Dict 
-from matching.match import Match
+from src.matching.match import Match
 import os
 import logging 
 
@@ -32,7 +32,7 @@ class BaseMatcher(ABC):
         if out_dir == None:
             out_dir = f"{self.name}_out"
             logger.info(f"No output directory passed. setting it as {out_dir}")
-        parent = os.path.abspath("../out")
+        parent = os.path.abspath("out")
         Path.mkdir(Path(f"{parent}/{out_dir}"), exist_ok= True)
         return f"{parent}/{out_dir}"
     
@@ -62,10 +62,10 @@ class BaseMatcher(ABC):
         """
         name = name.lower()
         if "naive" in name:
-            from matching.naive_matcher import NaiveMatcher
+            from src.matching.naive_matcher import NaiveMatcher
             return NaiveMatcher(name, out_dir)
         elif "cocola" in name:
-            from matching.cocola_matcher import CocolaMatcher
+            from src.matching.cocola_matcher import CocolaMatcher
             return CocolaMatcher(name, out_dir, stem_dir)
         else:
             raise ValueError(f"Unsupported matcher key: {name}")
