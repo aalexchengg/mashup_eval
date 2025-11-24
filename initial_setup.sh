@@ -71,6 +71,6 @@ else
 fi
 
 echo "Generating the holdout set..."
-python3 -m src.prepare.prepare_holdout_dir
+python -m src.prepare.prepare_holdout_dir -p 0.01 -s data/holdout_set_mini
 
 echo "Environment Setup Complete!"

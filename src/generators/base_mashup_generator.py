@@ -77,7 +77,7 @@ class BaseMashupGenerator(ABC):
     def create(name: str, out_dir: str = None):
         """
         Factory method to create subclasses of BaseMashupGenerators.\\
-        Accepted generators are "identity" and "auto".\\
+        Accepted generators are "identity", "naive", and "auto".\\
         @param name: name of the generator.\\
         @param out_dir: output directory, if specified.\\
         @returns a child BaseMashupGenerator.\\
@@ -89,6 +89,9 @@ class BaseMashupGenerator(ABC):
         elif "auto" in name:
             from src.generators.auto_mashup_generator import AutoMashupGenerator
             return AutoMashupGenerator(name, out_dir)
+        elif "naive" in name: 
+            from src.generators.naive_mashup_generator import NaiveMashupGenerator
+            return NaiveMashupGenerator(name, out_dir)
         else:
             raise ValueError(f"Unsupported generator key: {name}")
     
