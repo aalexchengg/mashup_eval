@@ -3,7 +3,7 @@ import numpy as np
 import math
 import os
 import json
-from generators.automashup.key_finder import KeyFinder
+from src.generators.automashup.key_finder import KeyFinder
 
 # From: https://github.com/ax-le/automashup/blob/main/automashup/src/utils.py
 def note_to_frequency(key):

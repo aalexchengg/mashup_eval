@@ -5,8 +5,8 @@ import numpy as np
 import pyrubberband as pyrb
 import os
 
-from generators.automashup.automashup_utils import note_to_frequency, calculate_pitch_shift, increase_array_size, get_path
-from generators.automashup.segment import Segment
+from src.generators.automashup.automashup_utils import note_to_frequency, calculate_pitch_shift, increase_array_size, get_path
+from src.generators.automashup.segment import Segment
 
 
 # Define a Track class to represent a musical track

@@ -11,52 +11,73 @@ git clone https://github.com/aalexchengg/mashup_eval.git
 cd git clone
 mkdir data
 mkdir out
+mkdir logs # this is for if you're running on a cluster.
 ```
 
-## Download the FMA Dataset
+**IMPORTANT**: For all documentation, assume you are running from the root folder `mashup_eval/`.
+
+## Quick Setup
+
+Running the command below should do everything we describe (**except the actual preprocessing**). However, if you care to be pedantic, feel free to go through each section.
+```
+bash initial_setup.sh
+```
+
+## Environment Creation
+### Create the conda environment and install packages
+```
+conda create -n mashup && conda activate mashup
+conda install python=3.11
+conda install ffmpeg
+pip install -r requirements.txt
+```
+
+### Download the FMA Dataset
 
 You can find information about FMA [here](https://github.com/mdeff/fma). For our purposes, we use fma_small, which contains 8000 samples of music that are each 30 seconds long in a mp3 file format. While you can download the dataset by clicking on the link in the Github repository, we also give command line instructions to download it below.
 
 ```
-wget https://os.unil.cloud.switch.ch/fma/fma_small.zip
-unzip fma_small.zip
-```
-If that doesn't work, try using 7zip to unzip the file
-```
-7z x fma_small.zip
-```
-
-And then move it over to the data directory.
-
-```
-mv fma_small data/
+FMA_DIRECTORY="data/fma_small"
+if [ ! -d $FMA_DIRECTORY ]; then
+  wget https://os.unil.cloud.switch.ch/fma/fma_small.zip
+  unzip fma_small.zip
+  mv fma_small data/fma_small
+  # cleanup
+  rm fma_small.zip
+else
+  echo "Directory '$FMA_DIRECTORY' exists. Skipping this part."
+fi
 ```
 
-In addition, download a subset of 21 songs that we use specifically for song mashups. You can do so by downloading `fma_subset.zip` from [this Google Drive folder](https://drive.google.com/drive/folders/13ZmQ_NHpNQptrDNra0OR1GNkIQyzU9MK?usp=drive_link).
-
-Rename it to `sample`, and also move it to your data directory
+In addition, download a subset of 21 songs that we use specifically for song mashups. 
 
 ```
-mv fma_subset sample
-mv sample data/
+SAMPLE_DIRECTORY="data/sample"
+if [ ! -d $SAMPLE_DIRECTORY ]; then
+  gdown 1V_LDfm_GT2_XCN5EeXrzA7xBifxkxDAu
+  unzip fma_subset.zip
+  # cleanup
+  mv music_subselection data/sample
+  rm fma_subset.zip
+else
+  echo "Directory '$SAMPLE_DIRECTORY' exists. Skipping this part."
+fi
 ```
 
-## Create the conda environment
+### Creating the Holdout Directory
+
+A helper file to generate a holdout set for evaluation purposes (to be used in the future, e.g. during `holdout_set_generator`). Takes a subset of files from an unprocessed FMA dataset folder, which consists of only mp3 files. Run the following command in the root folder:
 
 ```
-conda create -n mashup && conda activate mashup
-conda install python=3.11
-conda install ffmpeg<8
+python -m src.prepare.prepare_holdout_dir
 ```
 
-## Install packages
+Options: 
+- `-f` `--fma-path`: path of the FMA folder (defaults to `data/fma_small`)
+- `-p` `--percent`: percentage of FMA folder to take (defaults to `0.1`)
+- `-s` `--save-path`: folder to save holdout set (defaults to `data/holdout_set`)
 
- Install the dependencies like so.
-```
-pip install -r requirements.txt
-```
-
-## Preprocess the subset dataset
+### Preprocess the subset dataset
 
 
 This is a bit of a headache, but an important step. You will have to run this on either a Linux machine or a Google Colab. If you are running this on a Linux machine, please use a separate virtual environment to preprocess the subset dataset.
@@ -79,26 +100,42 @@ To preprocess all the songs.
 
 Alternatively, if none of this works out for you, you can also take it from my (Google Drive Folder)[https://drive.google.com/drive/folders/13ZmQ_NHpNQptrDNra0OR1GNkIQyzU9MK?usp=drive_link], and then unzipping them like so.
 ```
-unzip out-20251113T044448Z-1-001.zip
-unzip out-20251113T044448Z-1-002.zip
+PREPROCESS_DIRECTORY="data/auto_preprocess"
+if [ ! -d $PREPROCESS_DIRECTORY ]; then
+  gdown 1eGWDzdWef4wMLTrRL05qwAFlMPGzbAX3
+  gdown 1mzQb_zzlKLIgJrQsCBtkD-3rtod7_pzb
+  unzip out-20251113T044448Z-1-001.zip -d preprocess_out_0
+  unzip out-20251113T044448Z-1-002.zip -d preprocess_out_1
+  mkdir $PREPROCESS_DIRECTORY
+  cp -r preprocess_out_0/out/* $PREPROCESS_DIRECTORY
+  cp -r preprocess_out_1/out/* $PREPROCESS_DIRECTORY
+  # cleanup
+  rm -rf preprocess_out_0
+  rm -rf preprocess_out_1
+  rm out-20251113T044448Z-1-001.zip
+  rm out-20251113T044448Z-1-002.zip
+else
+  echo "Directory '$PREPROCESS_DIRECTORY' exists. Skipping this part."
+fi
 ```
-Note that there are duplicates between the two folders, so make sure you only copy over the correct subdirectories from out 2 to out. The correct move should be in the commands below
-```
-mv out\ 2/separated/htdemucs/Dragon\ Or\ Emperor\ -\ Part\ of\ Me\ Says out/separated/htedemucs
-mv out\ 2/separated/htdemucs/Los\ Steaks\ -\ Sunday\ Girls out/separated/htedemucs
-mv out\ 2/separated/htdemucs/The\ Cute\ Lepers\ -\ Young\ Hearts out/separated/htedemucs
-```
-Rename this directory to `auto_preprocess` and drag it into your data folder.
 
-```
-mv auto_preprocess data/
-```
-
-## Downloading the COCOLA model
+### Downloading the COCOLA model
 
 You can download the COCOLA model by downloading from the following [link](https://drive.google.com/file/d/1S-_OvnDwNFLNZD5BmI1Ouck_prutRVWZ/view?usp=share_link). 
 
-We create a `cocola_model` subdirectory and place the model in `data/cocola_model/`.
+We create a `cocola_model` subdirectory and place the model in `data/cocola_model/` like so
+
+```
+echo "Downloading COCOLA model..."
+MODEL_DIRECTORY="data/cocola_model"
+if [ ! -d $MODEL_DIRECTORY ]; then
+  gdown 1S-_OvnDwNFLNZD5BmI1Ouck_prutRVWZ
+  mkdir $MODEL_DIRECTORY
+  mv checkpoint-epoch=87-val_loss=0.00.ckpt $MODEL_DIRECTORY
+else
+  echo "Directory '$MODEL_DIRECTORY' exists. Skipping this part."
+fi
+```
 
 ## Result
 
@@ -106,8 +143,10 @@ At the end, you should have a directory that looks like this:
 
 ```
 mashup_eval/
+├─ configs/
 ├─ data/
 │  ├─ auto_preprocess/
+│  ├─ holdout_set/
 │  ├─ sample/
 │  ├─ fma_small/
 │  ├─ cocola_model/
@@ -116,30 +155,33 @@ mashup_eval/
 
 # Running Experiments
 
-## Generating Matches
+Our three main scripts are 
+- `generate_matches.py` Iterates through an audio file directory and generates possible matches for mashups.
+- `generate_mashups.py` Iterates through the matches created in the previous step and generates mashups.
+- `evaluate_mashups.py` Iterates through the generated mashups and creates an evaluation score for each of them.
 
-To generate possible matches, run the following command
+More information about each script and how to run them individually can be found in the README of their associated subdirectory. In this section, we will provide information about how to run end-to-end experiments.
+
+The main command is 
+
 ```
-python3 generate_matches.py \
--inp_dir [path\to\audio_samples] \
--matcher [default='naive', 'cocola'] \
--sort [default='unsorted', 'largest', 'smallest'] \
--max_size [default=-1] \
--out_dir [default='{matcher}_out'] \
--out_path [default= '{matcher}_out/match_out']
-```
-
-Of the flags, only `-inp_dir` is required; the rest all have default values. 
-
-
-## Generate Mashups
-
-To generate mashups, run the following command
-```
-python3 generate_mashups.py \
--matches [\path\to\json\list\of\matches] \
--generator [default='identity', 'auto'] \
--out_dir [default=`{generator}_out`]
+bash run_experiment.sh all
 ```
 
-Of the flags, only `-matches` is required; the rest all have default values.
+This will run an end-to-end experiment, and will call all three scripts. If you want to only run one part of the script, you can run
+
+```
+bash run_experiment.sh [match/mash/evaluate]
+```
+
+Which will run just that section.
+
+## Configurations
+
+To configure each script in the main run file, simply modify the associated `.yaml` file in the configurations folder.
+
+- `configs/matcher_config.yaml` Will be the configurations associated with `generate_matches.py`
+- `configs/mashup_config.yaml` Will be the configurations associated with `generate_mashups.py`
+- `configs/evaluate_config.yaml` Will be the configurations associated with `evaluate_matches.py`
+
+
