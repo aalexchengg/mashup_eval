@@ -23,7 +23,8 @@ fi
 
 
 echo "Loading in environment..."
-module load anaconda3/2024.10-1 # for PSC only
+# module load anaconda3/2024.10-1 # for PSC only
+conda init
 conda activate mashup
 echo "Environment loaded."
 

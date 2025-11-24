@@ -1,5 +1,5 @@
-audio-path: out/identity_out_test
+audio_path: out/naive_out_test
 centroid: true
-out: out/eval_output
+output_path: out/eval_output
 k: 0.5
-p: data/holdout_set
+path_to_holdout: data/holdout_set_mini
