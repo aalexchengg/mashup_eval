@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def setup_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-generator', type = str,
-                        choices = ['identity', 'auto'],
+                        choices = ['identity', 'auto', 'naive'],
                         default = 'identity',
                         help = "Matcher strategy.")
     parser.add_argument('-matches', type = str,

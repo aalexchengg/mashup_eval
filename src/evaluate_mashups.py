@@ -13,6 +13,9 @@ from src.evaluate.holdout_set import HoldoutSet
 from src.evaluate.nll_extractor import NLLExtractor
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 def setup_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -26,7 +29,7 @@ def setup_parser():
     parser.add_argument(
         "-c", "--centroid", 
         type=bool, 
-        default=True, 
+        # default=True, 
         help="whether our distance metric is based on centroid or nearest " \
         "neighbor. defaults to centroid."
     )
@@ -34,7 +37,7 @@ def setup_parser():
     parser.add_argument(
         "-o", "--output-path", 
         type=str, 
-        default=os.path.join("out", "eval_output"), 
+        # default=os.path.join("out", "eval_output"), 
         help="directory where output should be stored. " \
         "default is out/eval_output."
     )
@@ -42,14 +45,14 @@ def setup_parser():
     parser.add_argument(
         "-k", "--k",
         type=float, 
-        default=0.5, 
+        # default=0.5, 
         help="k parameter for our metric. default is 0.5 (no effect of k)"
     )
 
     parser.add_argument(
         "-p", "--path-to-holdout", 
         type=str, 
-        default=os.path.join("data", "holdout_set"), 
+        # default=os.path.join("data", "holdout_set"), 
         help="path (from root) of directory holding only and all" \
         " holdout set .wav files"
     )
@@ -70,7 +73,6 @@ def compute_dHO(H: HoldoutSet, audio_file_path, do_centroid):
                           is_centroid=do_centroid)
     
 def compute_NLL(E: NLLExtractor, audio_file_path): 
-    print(audio_file_path)
     return E.get_nll(audio_file_path)
 
 def main(args):
@@ -79,6 +81,7 @@ def main(args):
     do_centroid = args.centroid
     out_path = args.output_path
     holdout_path = args.path_to_holdout 
+    logger.info(f"holdout path: {holdout_path}")
 
     # set up holdout & nll
     H = HoldoutSet(holdout_path)
