@@ -53,7 +53,7 @@ def main(args):
         for song in match.songs:
             paths.append(f"{match.directory}/{song}")
         logger.info(f"Generating a song for match {match.id} from {matches_path}...")
-        generator.generate(paths, match.id)
+        generator.generate(paths, match.id, match.layers)
         logger.info("Finished generation.")
     logger.info("All done.")
 

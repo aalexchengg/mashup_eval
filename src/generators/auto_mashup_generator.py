@@ -48,7 +48,7 @@ class AutoMashupGenerator(BaseMashupGenerator):
         # we're going to randomly choose from the paths we have and generate our mashups
         tracks = []
         for layer, candidates in songs.items():
-            if layers != None and layers[layer] != None:
+            if layers != None and layers[layer] != None and layers[layer] in candidates:
                 logger.info(f"Specified song found for layer {layer}!")
                 candidate = layers[layer]
             else:
