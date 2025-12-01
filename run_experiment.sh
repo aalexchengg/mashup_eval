@@ -40,7 +40,7 @@ if [ "$EXPERIMENT" == "match" ] || [ "$EXPERIMENT" == "all" ]; then
     echo "##################NEW PHASE#####################"
     echo "##################Matching...##################"
 
-    CMD="python3 -m src.generate_matches -inp_dir $MATCH_INP_DIR -config configs/cocola_matcher_config.yaml"
+    CMD="python -m src.generate_matches -inp_dir $MATCH_INP_DIR -config configs/matcher_config.yaml"
     if [ "$VERBOSE" == "verbose" ]; then
         CMD="$CMD -verbose"
     fi
@@ -56,7 +56,7 @@ if [ "$EXPERIMENT" == "mash" ] || [ "$EXPERIMENT" == "all" ]; then
     echo "##################NEW PHASE#####################"
     echo "##################Mashing...##################"
 
-    CMD="python3 -m src.generate_mashups -matches $MATCH_OUT_PATH -config configs/mashup_config.yaml"
+    CMD="python -m src.generate_mashups -matches $MATCH_OUT_PATH -config configs/mashup_config.yaml"
     if [ "$VERBOSE" == "verbose" ]; then
         CMD="$CMD -verbose"
     fi
@@ -71,7 +71,7 @@ if [ "$EXPERIMENT" == "evaluate" ] || [ "$EXPERIMENT" == "all" ]; then
     echo "##################NEW PHASE#####################"
     echo "##################Evaulating...##################"
 
-    CMD="python3 -m src.evaluate_mashups -a $MASHUP_OUT_PATH -config configs/evaluate_config.yaml"
+    CMD="python -m src.evaluate_mashups -a $MASHUP_OUT_PATH -config configs/evaluate_config.yaml"
     echo "Running: $CMD"
     $CMD
 else
