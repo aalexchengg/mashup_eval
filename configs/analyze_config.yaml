@@ -1,0 +1,5 @@
+naive_eval_path: /Users/abcheng/Documents/workspace/mashup_eval/out/eval_out/naive_eval_output.csv
+auto_eval_path: /Users/abcheng/Documents/workspace/mashup_eval/out/eval_out/auto_eval_output.csv
+naive_match_path: /Users/abcheng/Documents/workspace/mashup_eval/out/eval_out/psc_naive_match.jsonl
+auto_match_path: /Users/abcheng/Documents/workspace/mashup_eval/out/cocola_out/full_match_out.jsonl
+plot_col: C_MU
