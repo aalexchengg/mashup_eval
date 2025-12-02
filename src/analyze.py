@@ -53,7 +53,7 @@ def load_df(eval_filepath: str, match_filepath: Optional[str]) -> pd.DataFrame:
         for match in matches:
             match['songs_str'] = min(match['songs']) + max(match['songs'])
         match_df = pd.DataFrame(matches)
-        result = df.merge(match_df, on="id", how="left")
+        result = df.merge(match_df, on="id")
         assert(result['C_MU'].isna().sum() <= 0) # assert that the merge is correct
         if len(result) == 0:
             raise AssertionError("ids do not match! make sure they are from the same run.")
