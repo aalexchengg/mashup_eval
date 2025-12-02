@@ -1,0 +1,61 @@
+name: 15-798 Mashup Evaluation.
+welcome:
+  description: |-
+    #### ABX Demo
+
+    This is a demo listening test showing how ABX listening tests app works from the listener's perspective.
+
+    In this listening test you'll be given three different options with different compression methods
+    and your task is to choose your preferred option. There are two different clips with 10 iterations
+    each. This is an AB test. ABX tests where the listener needs to tell if sample X is the same as
+    sample A or sample B. Greater number of sample options is supported although it's recommended to
+    keep the number relatively low to avoid overloading the listener.
+
+    You'll see your results at the end. It would also be possible to have the test send the results to
+    the researcher by supplying an email in the configuration file but this test does not do so. The form
+    below is an example of what can be done to gather statistics about the different demographics. The
+    email sent to the research would also include the form data.
+  form:
+    - name: Age
+      inputType: number
+    - name: Gender
+      inputType: select
+      options:
+        - Female
+        - Male
+        - Other
+    - name: Experience
+      inputType: select
+      options:
+        - Trained listener
+        - Audio engineer
+        - Audio retailer
+        - Audio reviewer
+        - Self-proclaimed audiophile
+        - Musician
+        - None of the above
+results:
+  description: |-
+    ### Results
+
+    Here are your results
+options:
+  - name: top1 (main)
+    audioUrl: https://www.dropbox.com/scl/fi/gona91gne996ypg7qurh6/top_0_main.wav?rlkey=gyjbqah136ae7wh1kwqgu4e6s&st=sevb2ftc&dl=0
+    tag: top1 (main)
+  - name: top1 (counter)
+    audioUrl: https://www.dropbox.com/scl/fi/5wjcd35n5une4nlcsf42w/top_0_counter.wav?rlkey=qsbmk6wrdhs1xc7nojclix4n6&st=azj5s5qg&dl=0
+    tag: top1 (counter)
+  - name: top1 (naive)
+    audioUrl: https://www.dropbox.com/scl/fi/pzpyb8c4rao7z4zig8vqy/top_0_naive.wav?rlkey=drin0lllx6ywyf5oa409yqxm0&st=k3nt4n39&dl=0
+    tag: top1 (naive)
+tests:
+  - testType: AB
+    name: top 1
+    description: Select the most preferred option based on quality and creativity
+    options:
+      - top1 (main)
+      - top1 (counter)
+      - top1 (naive)
+    repeat: 1
+email: abcheng@andrew.cmu.edu
