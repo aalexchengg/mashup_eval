@@ -1,0 +1,53 @@
+name: 15-798 Mashup Evaluation.
+welcome:
+  description: |-
+    #### Mashup Evaluation
+
+    In the following survey, you will be prompted with three different mashups, all of which use the same songs.
+    You are allowed to listen to whichever sample you want for however long you want, and then are asked to select
+    your favorite song. Let the two key tenets that guide your choices be quality and creativity, *equally*.
+  form:
+    - name: Name
+      inputType: text
+results:
+  description: |-
+    ### Results
+
+    Here are your results
+options:
+  - name: top1 (main)
+    audioUrl: https://www.dropbox.com/scl/fi/gona91gne996ypg7qurh6/top_0_main.wav?rlkey=gyjbqah136ae7wh1kwqgu4e6s&st=sevb2ftc&dl=0
+    tag: top1 (main)
+  - name: top1 (counter)
+    audioUrl: https://www.dropbox.com/scl/fi/5wjcd35n5une4nlcsf42w/top_0_counter.wav?rlkey=qsbmk6wrdhs1xc7nojclix4n6&st=azj5s5qg&dl=0
+    tag: top1 (counter)
+  - name: top1 (naive)
+    audioUrl: https://www.dropbox.com/scl/fi/pzpyb8c4rao7z4zig8vqy/top_0_naive.wav?rlkey=drin0lllx6ywyf5oa409yqxm0&st=k3nt4n39&dl=0
+    tag: top1 (naive)
+  - name: top2 (main)
+    audioUrl: https://www.dropbox.com/scl/fi/w8t1p62i4dg0643zkt8hp/top_1_main.wav?rlkey=7yrzuzm0gg1o2psn9aak2gk3y&st=j02qpx1x&dl=0
+    tag: top2 (main)
+  - name: top2 (counter)
+    audioUrl: https://www.dropbox.com/scl/fi/a3wqpqfs6wgwp24tk34el/top_1_counter.wav?rlkey=n6xhk5km9p9mi9xpecsl7uj03&st=d0097fbm&dl=0
+    tag: top2 (counter)
+  - name: top2 (naive)
+    audioUrl: https://www.dropbox.com/scl/fi/4zbdep40cev3te7sh0bs5/top_1_naive.wav?rlkey=tg83fhv1161jzfqwdulmu9me6&st=5obk1bjo&dl=0
+    tag: top2 (naive)
+tests:
+  - testType: AB
+    name: top 1
+    description: Select the most preferred option based on quality and creativity
+    options:
+      - top1 (main)
+      - top1 (counter)
+      - top1 (naive)
+    repeat: 1
+  - testType: AB
+    name: top 2
+    description: Select the most preferred option based on quality and creativity
+    options:
+      - top2 (main)
+      - top2 (counter)
+      - top2 (naive)
+    repeat: 1
+email: abcheng@andrew.cmu.edu
