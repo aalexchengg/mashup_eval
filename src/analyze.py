@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import yaml
 import logging
 import io
+import itertools
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -23,6 +25,9 @@ def setup_parser():
     parser.add_argument('-config', type = str,
                         required = True,
                         help = "accepts yaml config files as well.")
+    parser.add_argument('-save', type = bool,
+                        action = argparse.BooleanOptionalAction,
+                        help = "If you want to save the resulting dataframe.")
     return parser
 
 def _extract_id(df: pd.DataFrame) -> pd.DataFrame:
@@ -36,7 +41,7 @@ def _extract_id(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def load_df(eval_filepath: str, match_filepath: Optional[str]) -> pd.DataFrame:
+def load_df(eval_filepath: str, match_filepath: Optional[str]=None) -> pd.DataFrame:
     """
     Loads in a dataframe and merges it with its match scores.\\
     @param eval_filepath: path to the evaluation dataframe.\\
@@ -80,6 +85,33 @@ def get_composite_scores(match_filepath: str) -> Dict[int, float]:
         else:
             result[hash_value] = match['score']
     return result
+
+def get_composite_eval(sample_df: pd.DataFrame, col: str) -> Dict[int, float]:
+    """
+    Gets a composite evaluation metric based on MusicGen output.\\
+    composite_eval = mean(songA + song B)\\
+    @param sample_df: dataframe of sample evaluation outputs.\\
+    @param col: the evaluation metric to compose\\
+    @returns mean, std dictionary of key: hash value of two songs in sorted order, value: composite evaluation metric\\
+    """
+    result_mean = dict()
+    result_std = dict()
+    if col not in sample_df.columns:
+        raise AssertionError(f"{col} was not found in the columns of the sample dataframe!")
+    sample_df['id'] = sample_df['file_path'].apply(lambda x: x.split("/")[-1])
+    # isolate the column
+    rows = [(row["id"], row[col]) for _, row in sample_df.iterrows()]
+    # itereate through pairwise combinations
+    for (songA, valA), (songB, valB) in itertools.combinations(rows, 2):
+        # skip if songs are equal to each other
+        if songA == songB:
+            continue
+        vals = np.array([valA, valB])
+        hash_value = hash(min(songA, songB) + max(songA, songB))
+        result_mean[hash_value] = vals.mean()
+        result_std[hash_value] = vals.std()
+    return result_mean, result_std
+    
 
 def _get_rank_correlation(df: pd.DataFrame, colA: str, colB: str) -> Tuple[float, float]:
     """
@@ -164,28 +196,55 @@ def write_correlations(correlations: Tuple[Tuple[float]], name: str, out: io.Tex
     out.write(f"{name} nll spearman: {nll_spearman}\n")
     out.write(f"{name} nll kendall: {nll_kendall}\n")
 
-def analyze_correlations(dfs: Dict[str, pd.DataFrame]) -> None:
-    with open("out/analyze/correlations.txt", "w") as f:
+def analyze_correlations(dfs: Dict[str, pd.DataFrame], timestamp) -> None:
+    """
+    Analyzes the spearman and kendall correlation between C_MU, NLL and COCOLA scores.\\
+    @param dfs: dictionary of dataframes to analyze over.\\
+    """
+    with open(f"out/analyze/{timestamp}/correlations.txt", "w") as f:
         for name, df in dfs.items():
             correlations = get_correlations(df, 'score', name)
             write_correlations(correlations, name, f)
+            # while we're here, write some other stats
+            f.write(f"{name}: [C_MU] mean: {df['C_MU'].mean()} | median {df['C_MU'].median()} | std {df['C_MU'].std()}\n")
+            f.write(f"{name}: [NLL] mean: {df['NLL'].mean()} | median {df['NLL'].median()} | std {df['NLL'].std()}\n")
+            f.write(f"{name}: [d_HO] mean: {df['d_HO'].mean()} | median {df['d_HO'].median()} | std {df['d_HO'].std()}\n")
 
-
-def plot_scores(dfs: Dict[str, pd.DataFrame], col: str, overlays: Optional[List[Tuple]] = None) -> None:
+def plot_scores(dfs: Dict[str, pd.DataFrame], col: str, timestamp:str, overlays: Optional[List[Tuple]] = None) -> None:
     """
-    Plots the score distributions for naive, auto, and stacked, and also overlays auto and stacked.
-    @param dfs: the dataframe dictionary that we are analyzing.
-    @param overlays: pairs of overlays to generate histograms for
+    Plots the score distributions for naive, auto, and stacked, and also overlays auto and stacked.\\
+    @param dfs: the dataframe dictionary that we are analyzing.\\
+    @param col: column to plot against score.\\
+    @param timestamp: subdirectory to place graph in.\\
+    @param overlays: pairs of overlays to generate histograms for.\\
     """
     for name, df in dfs.items():
-        _plot_scores_single(df, col, name)
+        _plot_scores_single(df, col, f"{timestamp}/{name}")
+        _plot_relationship(df, name, "d_HO", "C_MU", timestamp)
     if overlays:
         for name1, name2 in overlays:
             if name1 not in dfs:
                 raise AssertionError(f"{name1} is not present in the dataframe dictionary!")
             if name2 not in dfs:
                 raise AssertionError(f"{name2} is not in the dataframe dictionary!")
-            _plot_scores_overlay(dfs[name1], name1, dfs[name2], name2, col, f'overlay_{name1}_{name2}')
+            _plot_scores_overlay(dfs[name1], name1, dfs[name2], name2, col, f'{timestamp}/overlay_{name1}_{name2}')
+
+
+def _plot_relationship(df: pd.DataFrame, name, col1: str, col2: str, timestamp: str) -> None:
+    """
+    Generates a scatterplot between two columns in a dataframe and writes it to out/analyze/{timestamp}.\\
+    @param df: dataframe to do EDA on.\\
+    @param name: name of the dataframe.\\
+    @param col1: column for the x-axis.\\
+    @param col2: column for the y-axis.\\
+    @param timestamp: subdirectory to place graph in.\\
+    """
+    plt.scatter(df[col1], df[col2])
+    plt.xlabel(col1)
+    plt.ylabel(col2)
+    plt.title(f"{col1} vs {col2} for {name}")
+    plt.savefig(f"out/analyze/{timestamp}/{name}_{col1}_{col2}.png")
+    plt.close()
 
 
 def check_attr(args) -> None:
@@ -200,10 +259,32 @@ def check_attr(args) -> None:
 
 
 def main(args):
+    # load in dataframes
     naive_df = load_df(args.naive_eval_path, args.naive_match_path)
     auto_df = load_df(args.auto_eval_path, args.auto_match_path)
+    sample_df = pd.read_csv(args.sample_eval_path)
+    # get composite scores
     composite_scores = get_composite_scores(args.auto_match_path)
+    composite_nll_mean, composite_nll_std = get_composite_eval(sample_df, 'NLL')
+    composite_dho_mean, compoite_dho_std = get_composite_eval(sample_df, 'd_HO')
+    # composite score for naive
     naive_df['score'] = naive_df['songs_str'].apply(lambda x: composite_scores[hash(x)])
+    # nlls for both dataframes
+    auto_df['anll'] = auto_df['songs_str'].apply(lambda x: composite_nll_mean[hash(x)])
+    auto_df['anll_std'] = auto_df['songs_str'].apply(lambda x: composite_nll_std[hash(x)])
+    naive_df['anll'] = naive_df['songs_str'].apply(lambda x: composite_nll_mean[hash(x)])
+    naive_df['anll_std'] = naive_df['songs_str'].apply(lambda x: composite_nll_std[hash(x)])
+    # dhos for both dataframes
+    auto_df['adho'] = auto_df['songs_str'].apply(lambda x: composite_dho_mean[hash(x)])
+    auto_df['ado_std'] = auto_df['songs_str'].apply(lambda x: compoite_dho_std[hash(x)])
+    naive_df['adho'] = naive_df['songs_str'].apply(lambda x: composite_dho_mean[hash(x)])
+    naive_df['adho_std'] = naive_df['songs_str'].apply(lambda x: compoite_dho_std[hash(x)])
+    # now, modify C_MU
+    naive_df['C_MU'] = np.log((naive_df['d_HO']/(naive_df['NLL'] - naive_df['anll'])**2))
+    auto_df['C_MU'] = np.log((auto_df['d_HO']/(auto_df['NLL'] - auto_df['anll'])**2))
+    # maybe also track the differences
+    naive_df['Log NLL diff squared'] = np.log((naive_df['NLL'] - naive_df['anll'])**2)
+    auto_df['Log NLL diff squared'] = np.log((auto_df['NLL'] - auto_df['anll'])**2)
     # flag the source
     naive_df['source'] = '0'
     auto_df['source'] = '1'
@@ -212,10 +293,20 @@ def main(args):
     dfs = {"naive": naive_df, "auto": auto_df, "stacked": stacked_df}
     overlays = [('naive', 'auto')]
     # do something!
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    os.makedirs(f"out/analyze/{timestamp}", exist_ok=True)
     if args.action == "corr" or args.action == "all":
-        analyze_correlations(dfs)
+        analyze_correlations(dfs, timestamp)
     if args.action == "plot" or args.action == "all":
-        plot_scores(dfs, args.plot_col, overlays)
+        plot_scores(dfs, args.plot_col, timestamp, overlays)
+        plot_scores(dfs, "d_HO", timestamp, overlays)
+        plot_scores(dfs, "NLL", timestamp, overlays)
+        plot_scores(dfs, "Log NLL diff squared", timestamp, overlays)
+    if args.save:
+        logger.info("Writing dataframes to output...")
+        naive_df.to_csv(f"out/analyze/{timestamp}/naive_df_analyzed.csv")
+        auto_df.to_csv(f"out/analyze/{timestamp}/auto_df_analyzed.csv")
+        stacked_df.to_csv(f"out/analyze/{timestamp}/stacked_df_analyzed.csv")
 
 
 if __name__ == "__main__":
