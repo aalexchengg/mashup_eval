@@ -184,4 +184,12 @@ To configure each script in the main run file, simply modify the associated `.ya
 - `configs/mashup_config.yaml` Will be the configurations associated with `generate_mashups.py`
 - `configs/evaluate_config.yaml` Will be the configurations associated with `evaluate_matches.py`
 
+# Analysis
+
+To run analysis, run the following command.
+
+```
+bash run_experiment.sh analyze [save]
+```
+
 

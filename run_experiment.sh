@@ -77,5 +77,16 @@ if [ "$EXPERIMENT" == "evaluate" ] || [ "$EXPERIMENT" == "all" ]; then
 else
     echo "Skipping evaluation..."
 fi
+#### ANALYSIS #####
+if [ "$EXPERIMENT" == "analysis" ]; then
+    echo "##################NEW PHASE#####################"
+    echo "##################Analysis...##################"
+
+    CMD="python -m src.analyze -config configs/analysis_config.yaml"
+    if [ "$VERBOSE" == "save" ]; then # hacky way to do this
+        CMD="$CMD -save"
+    fi
+    echo "Running: $CMD"
+    $CMD
 
 echo "Experiment Complete!"
